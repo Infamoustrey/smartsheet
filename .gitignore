@@ -1,3 +1,4 @@
-vendor
-phpunit.xml
+vendor 
 composer.lock
+.env
+.phpunit.result.cache
