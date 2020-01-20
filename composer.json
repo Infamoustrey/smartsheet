@@ -18,5 +18,10 @@
   ],
   "require": {
     "guzzlehttp/guzzle": "^6.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Smartsheet\\": "src/"
+    }
   }
 }
