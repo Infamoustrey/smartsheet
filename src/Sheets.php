@@ -2,7 +2,7 @@
 
 namespace Smartsheet;
 
-class Sheet
+class Sheets
 {
 
     protected $client;
