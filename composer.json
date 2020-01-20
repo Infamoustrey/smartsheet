@@ -1,0 +1,22 @@
+{
+  "name": "infamoustrey/smartsheet",
+  "description": "An API for Smartsheet",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "library",
+    "http",
+    "smartsheet",
+    "client"
+  ],
+  "authors": [
+    {
+      "name": "Trey Foster",
+      "email": "treybfoster@gmail.com",
+      "homepage": "https://treyfoster.com/"
+    }
+  ],
+  "require": {
+    "guzzlehttp/guzzle": "^6.5"
+  }
+}
