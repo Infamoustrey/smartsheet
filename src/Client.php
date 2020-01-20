@@ -2,6 +2,9 @@
 
 namespace Smartsheet;
 
+/**
+ * The Guzzle Client Wrapper
+ */
 class Client
 {
 
