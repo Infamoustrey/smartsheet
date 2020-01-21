@@ -37,4 +37,14 @@ class Client
     {
         return $this->guzzleClient->get($uri, $options);
     }
+
+    public function post(string $uri, array $options = [])
+    {
+        return $this->guzzleClient->post($uri, $options);
+    }
+
+    public function delete(string $uri, array $options = [])
+    {
+        return $this->guzzleClient->delete($uri, $options);
+    }
 }

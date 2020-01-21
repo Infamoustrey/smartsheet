@@ -12,12 +12,33 @@ class Sheets
         $this->client = $client;
     }
 
-    public function fetch()
+    public function list()
     {
         $response = $this->client->get('sheets');
 
         $sheets = json_decode($response->getBody())->data;
 
         return $sheets;
+    }
+
+    public function fetch($sheetId)
+    {
+        $response = $this->client->get("sheets/$sheetId");
+
+        $sheets = json_decode($response->getBody());
+
+        return $sheets;
+    }
+
+    public function insertRow(string $sheetId, array $rows)
+    {
+        return $this->client->post("sheets/$sheetId/rows", [
+            'json' => $rows
+        ]);
+    }
+
+    public function deleteRow(string $sheetId, string $rowId)
+    {
+        return $this->client->delete("sheets/$sheetId/rows?ids=$rowId");
     }
 }
