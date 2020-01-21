@@ -14,6 +14,16 @@ $ composer require infamoustrey/smartsheet
 
 Use this repository's [issue tracker](https://github.com/Infamoustrey/smartsheet/issues) to resolve issues and ask questions.
 
+## Roadmap
+
+There really isn't one, I'll add to this repository as I need functionality from it. Feel free to do the same.
+
 ## Contributing
 
-Feel free to [submit a PR](https://github.com/Infamoustrey/smartsheet/compare), just be sure to explain what you are trying to fix/add when submitting it.
+Feel free to [submit a PR](https://github.com/Infamoustrey/smartsheet/compare), just be sure to explain what you are trying to fix/add when submitting it. If you do decide to add functionality, it must be covered by a test. See the `phpunit.xml` file for more info.
+
+To run the tests simply run
+
+```bash
+$ ./vendor/bin/phpunit
+```
