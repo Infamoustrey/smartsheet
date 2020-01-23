@@ -37,6 +37,13 @@ class Sheets
         ]);
     }
 
+    public function addLinkAttachmentToRow(string $sheetId, string $rowId, array $attachment)
+    {
+        return $this->client->post("sheets/$sheetId/rows/$rowId/attachments", [
+            'json' => $attachment
+        ]);
+    }
+
     public function deleteRow(string $sheetId, string $rowId)
     {
         return $this->client->delete("sheets/$sheetId/rows?ids=$rowId");

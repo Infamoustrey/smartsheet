@@ -61,6 +61,39 @@ class SheetsTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
+    public function testCanLinkRow(): void
+    {
+        $sheets = new Sheets($this->getClient());
+        $sheetList = $sheets->list();
+
+        $sheet = $sheets->fetch($sheetList[0]->id);
+
+        $columns = $sheet->columns;
+
+        $row = [
+            "cells" => []
+        ];
+
+        foreach ($columns as $column) {
+            $row['cells'][] = [
+                'columnId' => $column->id,
+                'value' => 'testValue'
+            ];
+        }
+
+        $rowResponse = $sheets->insertRow($sheet->id, [$row]);
+
+        $row = json_decode($rowResponse->getBody())->result[0];
+        $response = $sheets->addLinkAttachmentToRow($sheet->id, $row->id, [
+            'attachmentType' => 'LINK',
+            'description' => 'Test Attachment',
+            'name' => 'link',
+            'url' => 'https://github.com/Infamoustrey/magnifique'
+        ]);
+
+        $this->assertEquals(200, $response->getStatusCode());
+    }
+
     public function testCanDeleteRow()
     {
         $sheets = new Sheets($this->getClient());
