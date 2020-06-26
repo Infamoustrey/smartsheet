@@ -2,49 +2,78 @@
 
 namespace Smartsheet;
 
-/**
- * The Guzzle Client Wrapper
- */
-class Client
+class Client extends APIClient
 {
-
-    protected const BASE_URL = "https://api.smartsheet.com/2.0/";
-
-    protected $guzzleClient;
+    public function __construct(array $config = [])
+    {
+        parent::__construct($config);
+    }
 
     /**
-     * Undocumented function
+     * List Account Sheets
      *
-     * config
-     *     token => A valid smartsheet API Token
-     * 
-     * 
-     * @param array $config
+     * @return Contact[]
      */
-    public function __construct(array $config)
+    public function listContacts(): array
     {
-        $authHeader = "Bearer " . $config['token'];
+        $response = $this->get('contacts');
 
-        $this->guzzleClient = new \GuzzleHttp\Client([
-            'base_uri' => self::BASE_URL,
-            'headers' => [
-                'Authorization' => $authHeader
-            ]
-        ]);
+        if ($response->totalPages > 1) {
+
+            $contacts = $response->data;
+
+            for ($page = 2; $page <= $response->totalPages; $page++) {
+                $contacts = array_merge($contacts, $this->get("contacts?page=$page")->data);
+            }
+
+            return $contacts;
+        } else {
+            return $response->data;
+        }
     }
 
-    public function get(string $uri, array $options = [])
+    /**
+     * List Account Sheets
+     * @return array
+     */
+    public function listSheets(): array
     {
-        return $this->guzzleClient->get($uri, $options);
+        return $this->get('sheets')->data;
     }
 
-    public function post(string $uri, array $options = [])
+    /**
+     * Fetch a specific sheet
+     *
+     * @param string $sheetId
+     * @return Sheet
+     */
+    public function getSheet(string $sheetId): Sheet
     {
-        return $this->guzzleClient->post($uri, $options);
+        $response = $this->get("sheets/$sheetId");
+
+        return new Sheet((array)$response, $this);
     }
 
-    public function delete(string $uri, array $options = [])
+    /**
+     * Fetch a specific row in a sheet
+     *
+     * @param string $sheetId
+     * @param string $rowId
+     * @return Row
+     */
+    public function getRow(string $sheetId, string $rowId): Row
     {
-        return $this->guzzleClient->delete($uri, $options);
+        $response = $this->get("sheets/$sheetId/rows/$rowId");
+
+        return new Row((array)$response, $this);
+    }
+
+    /**
+     * @param string $folderId
+     * @return Folder
+     */
+    public function getFolder(string $folderId)
+    {
+        return new Folder($this->get("folders/$folderId"), $this);
     }
 }

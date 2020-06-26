@@ -5,7 +5,8 @@ $dotenv->load();
 
 use PHPUnit\Framework\TestCase;
 use Smartsheet\Client;
-use Smartsheet\Sheets;
+use Smartsheet\Sheet;
+use Smartsheet\Row;
 
 class SheetsTest extends TestCase
 {
@@ -17,92 +18,79 @@ class SheetsTest extends TestCase
 
     public function testCanFetchSheets(): void
     {
-        $sheets = new Sheets($this->getClient());
 
-        $sheetList = $sheets->list();
+        $sheetList = $this->getClient()->listSheets();
 
         $this->assertNotEmpty($sheetList);
     }
 
     public function testCanListColumns(): void
     {
-        $sheets = new Sheets($this->getClient());
-        $sheetList = $sheets->list();
 
-        $sheet = $sheets->fetch($sheetList[0]->id);
+        $sheets = $this->getClient()->listSheets();
 
-        $columns = $sheet->columns;
+        $sheet = $this->getClient()->getSheet($sheets[0]->id);
+
+        $columns = $sheet->getColumns();
 
         $this->assertNotEmpty($columns);
     }
 
     public function testCanInsertRows(): void
     {
-        $sheets = new Sheets($this->getClient());
-        $sheetList = $sheets->list();
+        $sheets = $this->getClient()->listSheets();
 
-        $sheet = $sheets->fetch($sheetList[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->id);
 
-        $columns = $sheet->columns;
+        $columns = $sheet->getColumns();
 
-        $row = [
-            "cells" => []
-        ];
+        $row = [];
 
         foreach ($columns as $column) {
-            $row['cells'][] = [
-                'columnId' => $column->id,
-                'value' => 'testValue'
-            ];
+            $row[$column->title] = 'testValue';
         }
 
-        $response = $sheets->insertRow($sheet->id, [$row]);
+        $response = $sheet->addRow($row);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("SUCCESS", $response->message);
     }
 
     public function testCanLinkRow(): void
     {
-        $sheets = new Sheets($this->getClient());
-        $sheetList = $sheets->list();
+        $sheets = $this->getClient()->listSheets();
 
-        $sheet = $sheets->fetch($sheetList[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->id);
 
-        $columns = $sheet->columns;
+        $columns = $sheet->getColumns();
 
-        $row = [
-            "cells" => []
-        ];
+        $row = [];
 
         foreach ($columns as $column) {
-            $row['cells'][] = [
-                'columnId' => $column->id,
-                'value' => 'testValue'
-            ];
+            $row[$column->title] = 'testValue';
         }
 
-        $rowResponse = $sheets->insertRow($sheet->id, [$row]);
+        $response = $sheet->addRow($row);
 
-        $row = json_decode($rowResponse->getBody())->result[0];
-        $response = $sheets->addLinkAttachmentToRow($sheet->id, $row->id, [
+        $row = $this->getClient()->getRow($sheet->getId(), $response->result->id);
+
+        $response = $row->addAttachmentLink([
             'attachmentType' => 'LINK',
             'description' => 'Test Attachment',
             'name' => 'link',
-            'url' => 'https://github.com/Infamoustrey/magnifique'
+            'url' => 'https://github.com/Infamoustrey/smartsheet'
         ]);
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("SUCCESS", $response->message);
     }
 
     public function testCanDeleteRow()
     {
-        $sheets = new Sheets($this->getClient());
-        $sheetList = $sheets->list();
+        $sheets = $this->getClient()->listSheets();
 
-        $sheet = $sheets->fetch($sheetList[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->id);
 
-        $response = $sheets->deleteRow($sheet->id, $sheet->rows[0]->id);
+        $response = $sheet->deleteRow($sheet->getRows()[0]->getId());
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals("SUCCESS", $response->message);
     }
 }

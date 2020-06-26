@@ -1,6 +1,6 @@
 # Smartsheet
 
-This libary serves as a convenience wrapper around the REST API that smartsheet exposes. It uses Guzzle for cross platform compatiblility, check out [their repository](http://docs.guzzlephp.org/en/stable/overview.html#requirements) for dependency requirements.
+This library serves as a convenience wrapper around the [REST API that smartsheet exposes](https://smartsheet-platform.github.io/api-docs/).  
 
 ## Installation
 
@@ -8,6 +8,18 @@ The preferred method of installing this library is with Composer by running the 
 
 ```bash
 $ composer require infamoustrey/smartsheet
+```
+
+## Usage 
+
+This api uses a fluent style for interacting with Smartsheet.
+
+```php
+
+$smartsheetClient = new \Smartsheet\Client([ 'token' => 'yourapitoken' ]);
+
+$smartsheetClient->getSheet()'
+
 ```
 
 ## Issues
@@ -20,7 +32,8 @@ There really isn't one, I'll add to this repository as I need functionality from
 
 ## Contributing
 
-Feel free to [submit a PR](https://github.com/Infamoustrey/smartsheet/compare), just be sure to explain what you are trying to fix/add when submitting it. If you do decide to add functionality, it must be covered by a test. See the `phpunit.xml` file for more info.
+Feel free to [submit a PR](https://github.com/Infamoustrey/smartsheet/compare), just be sure to explain what you are trying to fix/add when submitting it. 
+If you do decide to add functionality, it must be covered by a test. See the [contribution guide](./CONTRIBUTING.md) for more info. 
 
 To run the tests simply run
 
