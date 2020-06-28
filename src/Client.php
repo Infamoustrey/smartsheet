@@ -76,4 +76,27 @@ class Client extends APIClient
     {
         return new Folder($this->get("folders/$folderId"), $this);
     }
+
+    /**
+     * @param string $workspaceId
+     * @return mixed
+     */
+    public function getWorkspace(string $workspaceId)
+    {
+        $response = $this->get("workspaces/$workspaceId");
+
+        return new Workspace((array)$response, $this);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function listWorkspaces()
+    {
+        $response = $this->get("workspaces");
+
+        return $response->data;
+    }
+
+
 }
