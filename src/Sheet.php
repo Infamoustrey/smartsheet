@@ -2,6 +2,7 @@
 
 namespace Smartsheet;
 
+use Exception;
 use Tightenco\Collect\Support\Collection;
 
 class Sheet extends Result
@@ -33,6 +34,38 @@ class Sheet extends Result
     }
 
     /**
+     * Drops columns in a given list of column names
+     * @param array $columnNames
+     */
+    public function dropColumns(array $columnNames): void
+    {
+        $columnsToDelete = collect($this->columns)->filter(function ($column) use ($columnNames) {
+            return in_array($column->title, $columnNames);
+        })->pluck('id');
+
+        foreach ($columnsToDelete as $columnId) {
+            $this->client->delete("sheets/$this->id/columns/$columnId");
+            sleep(1);
+        }
+    }
+
+    /**
+     * Drops all columns excluding a list of given column names
+     * @param array $columnNames
+     */
+    public function dropAllColumnsExcept(array $columnNames): void
+    {
+        $columnsToDelete = collect($this->columns)->filter(function ($column) use ($columnNames) {
+            return !in_array($column->title, $columnNames);
+        })->pluck('id');
+
+        foreach ($columnsToDelete as $columnId) {
+            $this->client->delete("sheets/$this->id/columns/$columnId");
+            sleep(1);
+        }
+    }
+
+    /**
      * Copy a sheet to the specified folder
      * @param string $sheetName
      * @param string $destinationFolderId
@@ -60,11 +93,22 @@ class Sheet extends Result
         });
     }
 
+    /**
+     * Deletes a give row
+     * @param string $rowId
+     * @return mixed
+     */
     public function deleteRow(string $rowId)
     {
         return $this->client->delete("sheets/$this->id/rows?ids=$rowId");
     }
 
+    /**
+     * Returns a column's id given its title
+     * @param $title
+     * @return mixed
+     * @throws Exception
+     */
     public function getColumnId($title)
     {
         $column = collect($this->columns)
@@ -79,6 +123,12 @@ class Sheet extends Result
         return $column->id;
     }
 
+    /**
+     * Takes an array of column name to column value and maps it to a cell object
+     * @param array $cells
+     * @return array
+     * @throws Exception
+     */
     protected function mapDataToCell(array $cells)
     {
         $newCells = [];
@@ -118,6 +168,7 @@ class Sheet extends Result
      *
      * @param array $cells
      * @return array
+     * @throws Exception
      */
     public function addRow(array $cells)
     {
@@ -132,10 +183,10 @@ class Sheet extends Result
      *
      * @param array $rows
      * @return array
+     * @throws Exception
      */
     public function addRows(array $rows)
     {
-
         $rowsToInsert = collect($rows)->map(function ($cells) {
             return [
                 'toBottom' => true,
@@ -152,6 +203,7 @@ class Sheet extends Result
      * Update rows
      * @param array $rows
      * @return mixed
+     * @throws Exception
      */
     public function updateRows(array $rows)
     {

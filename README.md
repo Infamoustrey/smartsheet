@@ -18,7 +18,7 @@ This api uses a fluent style for interacting with Smartsheet.
 
 $smartsheetClient = new \Smartsheet\Client([ 'token' => 'yourapitoken' ]);
 
-$smartsheetClient->getSheet()'
+$smartsheetClient->getSheet('sheetid');
 
 ```
 
@@ -28,7 +28,7 @@ Use this repository's [issue tracker](https://github.com/Infamoustrey/smartsheet
 
 ## Roadmap
 
-There really isn't one, I'll add to this repository as I need functionality from it. Feel free to do the same.
+Full api coverage! There's a lot missing, if you see something missing then put in a PR! Your help is appreciated!
 
 ## Contributing
 

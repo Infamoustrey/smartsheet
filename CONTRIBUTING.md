@@ -3,6 +3,20 @@
 Please take a moment to review this document in order to make the contribution
 process easy and effective for everyone involved.
 
+## Feature Requests
+
+Feature requests are welcome. But take a moment to find out whether your idea
+fits with the scope and aims of the project. The idea is full api coverage! If it doesn't fit that description provide a good description why you think it should be added anyway! We're open to new ideas!
+
+## Pull Requests
+
+Good pull requests (patches, improvements, new features) are a fantastic
+help. They should remain focused in scope and avoid containing unrelated
+commits.
+
+**IMPORTANT**: By submitting a patch, you agree to allow the project owner to
+license your work under the same license as that used by the project.
+
 ## Using the issue tracker
 
 [GitHub Issues](https://github.com/Infamoustrey/smartsheet/issues) is the preferred channel
@@ -42,23 +56,4 @@ your environment? What steps will reproduce the issue? What OS experienced the
 problem? What would you expect to be the outcome? All these details will help
 to fix any potential bugs.
 
-## Feature Requests
 
-Feature requests are welcome. But take a moment to find out whether your idea
-fits with the scope and aims of the project. This project aims to have feature
-parody with similar paid for softwares. Take a look at some alternative
-softwares and see if your request actually satisfies a need from the community.
-
-## Pull Requests
-
-Good pull requests (patches, improvements, new features) are a fantastic
-help. They should remain focused in scope and avoid containing unrelated
-commits.
-
-**Please ask first** before embarking on any significant pull request (e.g.
-implementing features, refactoring code, porting to a different language),
-otherwise, you risk spending a lot of time working on something that might
-not get accepted into the project.
-
-**IMPORTANT**: By submitting a patch, you agree to allow the project owner to
-license your work under the same license as that used by the project.
