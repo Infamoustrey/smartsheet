@@ -17,10 +17,10 @@
     }
   ],
   "require": {
-    "php": "^7.4",
-    "guzzlehttp/guzzle": "^6.5",
+    "php": "^8.0",
+    "guzzlehttp/guzzle": "^6.5", 
+    "illuminate/collections": "^8.19",
     "ext-json": "*",
-    "tightenco/collect": "^7.12",
     "ext-curl": "*"
   },
   "autoload": {

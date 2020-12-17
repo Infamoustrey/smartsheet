@@ -1,23 +1,24 @@
 <?php
 
-namespace Smartsheet;
+namespace Smartsheet\Resources;
 
 use Exception;
+use Smartsheet\SmartsheetClient;
 
-class Folder extends Result
+class Folder extends Resource
 {
-    protected Client $client;
+    protected SmartsheetClient $client;
 
     protected string $id;
     protected string $name;
     protected string $permaLink;
-    protected array $sheets;
+    protected array $sheets = [];
 
-    public function __construct($data, Client $client)
+    public function __construct($data)
     {
         parent::__construct($data);
 
-        $this->client = $client;
+        $this->client = resolve(SmartsheetClient::class);
     }
 
     /**
@@ -62,7 +63,7 @@ class Folder extends Result
      * @return Sheet $sheet
      * @throws Exception
      */
-    public function getSheet(string $name): Sheet
+    public function getSheet(string $name)
     {
         return $this->client->getSheet($this->getSheetId($name));
     }
@@ -74,5 +75,4 @@ class Folder extends Result
     {
         return $this->id;
     }
-
 }

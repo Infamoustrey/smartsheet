@@ -2,11 +2,32 @@
 
 namespace Smartsheet;
 
-class Client extends APIClient
+use Illuminate\Support\Collection;
+use Smartsheet\Resources\Contact;
+use Smartsheet\Resources\Sheet;
+use Smartsheet\Resources\Row;
+use Smartsheet\Resources\Folder;
+use Smartsheet\Resources\Workspace;
+
+class SmartsheetClient extends APIClient
 {
     public function __construct(array $config = [])
     {
         parent::__construct($config);
+    }
+
+    protected function instantiate(string $class, object|array $target): Object|Collection {
+        if(is_array($target)) {
+            $temp = [];
+
+            foreach($target as $t) {
+                $temp = new $class($this, $target);
+            }
+            
+            return $temp;
+        } else {
+            return new $class($this, $target);
+        }
     }
 
     /**
@@ -14,7 +35,7 @@ class Client extends APIClient
      *
      * @return Contact[]
      */
-    public function listContacts(): array
+    public function listContacts(): Collection
     {
         $response = $this->get('contacts');
 
@@ -26,15 +47,16 @@ class Client extends APIClient
                 $contacts = array_merge($contacts, $this->get("contacts?page=$page")->data);
             }
 
-            return $contacts;
+            return $this->instantiate(Contact::class, $contacts);
         } else {
-            return $response->data;
+            return $this->instantiate(Contact::class, $response->data);
         }
     }
 
     /**
      * List Account Sheets
-     * @return array
+     *
+     * @return Sheet[]
      */
     public function listSheets(): array
     {
@@ -51,7 +73,7 @@ class Client extends APIClient
     {
         $response = $this->get("sheets/$sheetId");
 
-        return new Sheet((array)$response, $this);
+        return new Sheet((array)$response);
     }
 
     /**
@@ -65,7 +87,7 @@ class Client extends APIClient
     {
         $response = $this->get("sheets/$sheetId/rows/$rowId");
 
-        return new Row((array)$response, $this);
+        return new Row((array)$response);
     }
 
     /**
@@ -74,29 +96,24 @@ class Client extends APIClient
      */
     public function getFolder(string $folderId)
     {
-        return new Folder($this->get("folders/$folderId"), $this);
+        return new Folder($this->get("folders/$folderId"));
     }
 
     /**
      * @param string $workspaceId
-     * @return mixed
+     * @return Workspace
      */
     public function getWorkspace(string $workspaceId)
     {
-        $response = $this->get("workspaces/$workspaceId");
-
-        return new Workspace((array)$response, $this);
+        return new Workspace($this->get("workspaces/$workspaceId"));
     }
 
     /**
-     * @return mixed
+     * Returns a list of workspaces
+     * @return Workspace
      */
     public function listWorkspaces()
     {
-        $response = $this->get("workspaces");
-
-        return $response->data;
+        return $this->get("workspaces")->data;
     }
-
-
 }

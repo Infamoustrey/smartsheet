@@ -1,21 +1,23 @@
 <?php
 
-namespace Smartsheet;
+namespace Smartsheet\Resources;
 
-class Cell extends Result
+use Smartsheet\SmartsheetClient;
+
+class Cell extends Resource
 {
-    protected Client $client;
+    protected SmartsheetClient $client;
 
     protected string $columnId;
     protected string $value;
     protected string $displayValue;
     protected string $formula;
 
-    public function __construct($data)
+    public function __construct(SmartsheetClient $client, array $data)
     {
         parent::__construct($data);
 
-        $this->client = resolve(SmartsheetClient::class);
+        $this->client = $client;
     }
 
     /**
@@ -28,12 +30,10 @@ class Cell extends Result
     }
 
     /**
-     * Returns the column id for the cell
      * @return string
      */
     public function getColumnId()
     {
         return $this->columnId;
     }
-
 }

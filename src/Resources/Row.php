@@ -1,13 +1,14 @@
 <?php
 
-namespace Smartsheet;
+namespace Smartsheet\Resources;
 
-use SplFileInfo;
+use Smartsheet\SmartsheetClient;
+
 use Tightenco\Collect\Support\Collection;
 
-class Row extends Result
+class Row extends Resource
 {
-    protected Client $client;
+    protected SmartsheetClient $client;
 
     protected string $id;
     protected string $sheetId;
@@ -16,38 +17,25 @@ class Row extends Result
 
     protected Sheet $sheet;
 
-    public function __construct($data, Client $client, Sheet $sheet = null)
+    public function __construct($data, Sheet $sheet = null)
     {
         parent::__construct($data);
 
-        $this->client = $client;
+        $this->client = resolve(SmartsheetClient::class);
 
         $this->sheet = $sheet ?? $this->client->getSheet($this->sheetId);
     }
 
-    /**
-     * Returns the Row Id
-     * @return string
-     */
     public function getId()
     {
         return $this->id;
     }
 
-    /**
-     * Returns the instance of the sheet the row belongs to.
-     * @return Sheet
-     */
     public function getSheet()
     {
         return $this->client->getSheet($this->sheetId);
     }
 
-    /**
-     * Return the cell for a given column name
-     * @param string $columnName
-     * @return mixed
-     */
     public function getCell(string $columnName)
     {
         return $this->getCells()->first(function ($cell) use ($columnName) {
@@ -56,7 +44,6 @@ class Row extends Result
     }
 
     /**
-     * Returns all of the cells for the row
      * @return Collection
      */
     public function getCells()
@@ -66,24 +53,16 @@ class Row extends Result
         });
     }
 
-    /**
-     * @param array $attachment
-     * @return mixed
-     */
     public function addAttachmentLink(array $attachment)
     {
-        return $this->client->post("sheets/$this->sheetId/rows/$this->id/attachments", [
+        $this->client->post("sheets/$this->sheetId/rows/$this->id/attachments", [
             'json' => $attachment
         ]);
     }
 
-    /**
-     * @param SplFileInfo $file
-     * @return bool|string
-     */
-    public function addAttachment(SplFileInfo $file)
+    public function addAttachment(UploadedFile $file)
     {
-        $authHeader = "Bearer " . $this->client->getAuthToken();
+        $authHeader = "Bearer " . config('services.smartsheet.token');
 
         $request = curl_init("https://api.smartsheet.com/2.0/sheets/$this->sheetId/rows/$this->id/attachments");
 
@@ -93,7 +72,8 @@ class Row extends Result
             CURLOPT_HTTPHEADER,
             [
                 'Authorization: ' . $authHeader,
-                'Content-Disposition: attachment; filename="' . $file->getFilename() . '"'
+                'Content-Disposition: attachment; filename="' . $file->getClientOriginalName() . '"',
+                'Content-Type: ' . $file->getMimeType()
             ]
         );
         curl_setopt($request, CURLOPT_POSTFIELDS, $file->get());

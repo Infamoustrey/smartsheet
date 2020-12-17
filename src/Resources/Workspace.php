@@ -1,31 +1,45 @@
 <?php
 
-namespace Smartsheet;
+namespace Smartsheet\Resources;
 
 use Exception;
+use Smartsheet\SmartsheetClient;
 
-class Workspace extends Result
+const DEFAULT_COLUMNS = [
+    [
+        "title" => "Primary",
+        "type" => "TEXT_NUMBER",
+        "primary" => true
+    ]
+];
+
+class Workspace extends Resource
 {
-    protected Client $client;
+    protected SmartsheetClient $client;
 
     protected string $id;
     protected string $name;
-    protected string $permaLink;
-    protected array $sheets;
+    protected array $sheets = [];
 
-    public function __construct($data, Client $client)
+    public function __construct($data)
     {
         parent::__construct($data);
 
-        $this->client = $client;
+        $this->client = resolve(SmartsheetClient::class);
     }
 
     /**
-     * @return string
+     * 
+     * @throws Exception
      */
-    public function getPermaLink()
+    public function createSheet($name, $columns = DEFAULT_COLUMNS)
     {
-        return $this->permaLink;
+        return $this->client->post("workspaces/$this->id/sheets", [
+            'json' => [
+                'name' => $name,
+                'columns' => $columns
+            ]
+        ]);
     }
 
     /**
@@ -62,7 +76,7 @@ class Workspace extends Result
      * @return Sheet $sheet
      * @throws Exception
      */
-    public function getSheet(string $name): Sheet
+    public function getSheet(string $name)
     {
         return $this->client->getSheet($this->getSheetId($name));
     }
@@ -74,5 +88,4 @@ class Workspace extends Result
     {
         return $this->id;
     }
-
 }
