@@ -32,3 +32,5 @@ jobs:
 
     - name: Run test suite
       run: composer run-script test
+      env:
+        SMARTSHEET_API_TOKEN: ${{ secrets.SMARTSHEET_API_TOKEN }}
