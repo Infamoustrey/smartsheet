@@ -90,4 +90,9 @@ class Workspace extends Resource
     {
         return $this->id;
     }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }

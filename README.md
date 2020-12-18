@@ -69,7 +69,7 @@ Fetch a workspace and access its properties. See the [Workspace Object](https://
 ```php
 $smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
 
-$worksheet = $smartsheetClient->getFolder('7116448184199044'); // Collection<Sheet>
+$workspace = $smartsheetClient->getWorkspace('7116448184199044'); // \Smartsheet\Resources\Workspace
 
 $workspace->getId(); // '7116448184199044'
 $workspace->getName(); // 'New workspace'
@@ -96,11 +96,11 @@ Fetch a folder and access its properties. See the [Folder Object](https://smarts
 ```php
 $smartsheetClient = new \Smartsheet\Client([ 'token' => 'yourapitoken' ]);
 
-$folder = $smartsheetClient->getFolder('7116448184199044'); // Collection<Sheet>
+$folder = $smartsheetClient->getFolder('7116448184199044'); // Folder
 
 // Access some fields
-$folder->id; // '7116448184199044'
-$folder->name; // 'Projects'
+$folder->getId(); // '7116448184199044'
+$folder->getName(); // 'Projects'
 $sheet = $folder->getSheet('sheet name');
 ```
 
