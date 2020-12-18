@@ -4,7 +4,7 @@ namespace Smartsheet\Resources;
 
 use Exception;
 use Smartsheet\SmartsheetClient;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 class Sheet extends Resource
 {
@@ -22,11 +22,11 @@ class Sheet extends Resource
     protected array $columns;
     protected array $rows;
 
-    public function __construct($data)
+    public function __construct(SmartsheetClient $client, array|object $data)
     {
         parent::__construct($data);
 
-        $this->client = resolve(SmartsheetClient::class);
+        $this->client = $client;
     }
 
     public function dropAllColumnsExcept(array $columnNames)
@@ -64,17 +64,19 @@ class Sheet extends Resource
         ]);
     }
 
-    /**
-     * @return Collection
-     */
-    public function getRows()
+    public function getRows(): Collection
     {
         return collect($this->rows)->map(function ($row) {
             return new Row($row, $this);
         });
     }
 
-    public function getColumnId($title)
+    /**
+     * @param $title
+     * @return string
+     * @throws Exception
+     */
+    public function getColumnId($title): string
     {
 
         $column = collect($this->columns)
@@ -83,13 +85,18 @@ class Sheet extends Resource
             });
 
         if (is_null($column)) {
-            throw new \Exception('Unable to find column with the name: ' . $title);
+            throw new Exception('Unable to find column with the name: ' . $title);
         }
 
         return $column->id;
     }
 
-    protected function generateRowCells(array $cells)
+    /**
+     * @param array $cells
+     * @return array
+     * @throws Exception
+     */
+    protected function generateRowCells(array $cells): array
     {
         $newCells = [];
 
@@ -123,15 +130,11 @@ class Sheet extends Resource
      * @param array $rows
      * @return array
      */
-    public function insertRows(array $rows)
+    public function insertRows(array $rows): array
     {
-        try {
-            return $this->client->post("sheets/$this->id/rows", [
-                'json' => $rows
-            ]);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            abort(500, print_r(json_decode($e->getResponse()->getBody()->getContents()), true));
-        }
+        return $this->client->post("sheets/$this->id/rows", [
+            'json' => $rows
+        ]);
     }
 
     /**
@@ -140,7 +143,7 @@ class Sheet extends Resource
      * @param array $rows
      * @return array
      */
-    public function addRows(array $rows)
+    public function addRows(array $rows): array
     {
 
         $rowsToInsert = collect($rows)->map(function ($cells) {
@@ -167,13 +170,9 @@ class Sheet extends Resource
             ];
         }
 
-        try {
-            return $this->client->put("sheets/$this->id/rows", [
-                'json' => $rowsToUpdate
-            ]);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            abort(500, print_r(json_decode($e->getResponse()->getBody()->getContents()), true));
-        }
+        return $this->client->put("sheets/$this->id/rows", [
+            'json' => $rowsToUpdate
+        ]);
     }
 
     public function updateRow($rowId, array $cells)
@@ -184,13 +183,9 @@ class Sheet extends Resource
             'cells' => $this->generateRowCells($cells)
         ];
 
-        try {
-            return $this->client->put("sheets/$this->id/rows", [
-                'json' => $rowsToUpdate
-            ]);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            abort(500, print_r(json_decode($e->getResponse()->getBody()->getContents()), true));
-        }
+        return $this->client->put("sheets/$this->id/rows", [
+            'json' => $rowsToUpdate
+        ]);
     }
 
     /**

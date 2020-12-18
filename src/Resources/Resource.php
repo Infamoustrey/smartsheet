@@ -16,7 +16,7 @@ class Resource
         }
     }
 
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }
@@ -26,7 +26,7 @@ class Resource
         return $this->$key;
     }
 
-    public function toJSON()
+    public function toJSON(): bool|string
     {
         return json_encode($this->data);
     }

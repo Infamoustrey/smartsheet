@@ -14,17 +14,17 @@ class Folder extends Resource
     protected string $permaLink;
     protected array $sheets = [];
 
-    public function __construct($data)
+    public function __construct(SmartsheetClient $client, $data)
     {
         parent::__construct($data);
 
-        $this->client = resolve(SmartsheetClient::class);
+        $this->client = $client;
     }
 
     /**
      * @return string
      */
-    public function getPermaLink()
+    public function getPermaLink(): string
     {
         return $this->permaLink;
     }
@@ -32,7 +32,7 @@ class Folder extends Resource
     /**
      * @return array
      */
-    public function getSheets()
+    public function getSheets(): array
     {
         return $this->sheets;
     }
@@ -43,7 +43,7 @@ class Folder extends Resource
      * @return string $id
      * @throws Exception
      */
-    public function getSheetId(string $name)
+    public function getSheetId(string $name): string
     {
         $sheet = collect($this->sheets)
             ->first(function ($sheet) use ($name) {
@@ -63,15 +63,17 @@ class Folder extends Resource
      * @return Sheet $sheet
      * @throws Exception
      */
-    public function getSheet(string $name)
+    public function getSheet(string $name): Sheet
     {
-        return $this->client->getSheet($this->getSheetId($name));
+        return $this->client->getSheet(
+            $this->getSheetId($name)
+        );
     }
 
     /**
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }

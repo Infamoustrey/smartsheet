@@ -16,24 +16,18 @@ class SmartsheetClient extends APIClient
         parent::__construct($config);
     }
 
-    protected function instantiate(string $class, object|array $target): Object|Collection {
-        if(is_array($target)) {
-            $temp = [];
+    protected function instantiateCollection(string $class, object|array $target): Collection {
+        $temp = [];
 
-            foreach($target as $t) {
-                $temp = new $class($this, $target);
-            }
-            
-            return $temp;
-        } else {
-            return new $class($this, $target);
+        foreach($target as $t) {
+            $temp = new $class($this, $target);
         }
+
+        return $temp;
     }
 
     /**
-     * List Account Sheets
-     *
-     * @return Contact[]
+     * List Account Contacts
      */
     public function listContacts(): Collection
     {
@@ -47,20 +41,18 @@ class SmartsheetClient extends APIClient
                 $contacts = array_merge($contacts, $this->get("contacts?page=$page")->data);
             }
 
-            return $this->instantiate(Contact::class, $contacts);
+            return $this->instantiateCollection(Contact::class, $contacts);
         } else {
-            return $this->instantiate(Contact::class, $response->data);
+            return $this->instantiateCollection(Contact::class, $response->data);
         }
     }
 
     /**
      * List Account Sheets
-     *
-     * @return Sheet[]
      */
-    public function listSheets(): array
+    public function listSheets(): Collection
     {
-        return $this->get('sheets')->data;
+        return $this->instantiateCollection(Sheet::class, $this->get('sheets')->data);
     }
 
     /**
@@ -73,7 +65,7 @@ class SmartsheetClient extends APIClient
     {
         $response = $this->get("sheets/$sheetId");
 
-        return new Sheet((array)$response);
+        return new Sheet($this, (array) $response);
     }
 
     /**
@@ -87,33 +79,34 @@ class SmartsheetClient extends APIClient
     {
         $response = $this->get("sheets/$sheetId/rows/$rowId");
 
-        return new Row((array)$response);
+        return new Row($this, (array)$response);
     }
 
     /**
+     * Fetch a folder with a given ID
      * @param string $folderId
      * @return Folder
      */
-    public function getFolder(string $folderId)
+    public function getFolder(string $folderId): Folder
     {
-        return new Folder($this->get("folders/$folderId"));
+        return new Folder($this, $this->get("folders/$folderId"));
     }
 
     /**
+     * Fetch a workspace with a given ID
      * @param string $workspaceId
      * @return Workspace
      */
-    public function getWorkspace(string $workspaceId)
+    public function getWorkspace(string $workspaceId): Workspace
     {
-        return new Workspace($this->get("workspaces/$workspaceId"));
+        return new Workspace($this, $this->get("workspaces/$workspaceId"));
     }
 
     /**
      * Returns a list of workspaces
-     * @return Workspace
      */
-    public function listWorkspaces()
+    public function listWorkspaces(): Collection
     {
-        return $this->get("workspaces")->data;
+        return $this->instantiateCollection(Workspace::class, $this->get("workspaces")->data);
     }
 }

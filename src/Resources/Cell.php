@@ -24,7 +24,7 @@ class Cell extends Resource
      * Returns either the formula or the value depending on if the cell uses a formula
      * @return string
      */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value ?? '';
     }
@@ -32,7 +32,7 @@ class Cell extends Resource
     /**
      * @return string
      */
-    public function getColumnId()
+    public function getColumnId(): string
     {
         return $this->columnId;
     }

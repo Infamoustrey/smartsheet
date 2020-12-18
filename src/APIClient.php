@@ -14,18 +14,21 @@ class APIClient
 
     protected GuzzleClient $guzzleClient;
 
+    protected string $token;
+
     /**
-     * Undocumented function
+     * Configure API Client
      *
      * config
      *     token => A valid smartsheet API Token
-     *
      *
      * @param array $config
      */
     public function __construct(array $config)
     {
-        $authHeader = "Bearer " . $config['token'];
+        $this->token = $config['token'];
+
+        $authHeader = "Bearer " . $this->token;
 
         $this->guzzleClient = new GuzzleClient([
             'base_uri' => self::BASE_URL,
@@ -53,5 +56,13 @@ class APIClient
     public function delete(string $uri, array $options = [])
     {
         return json_decode($this->guzzleClient->delete($uri, $options)->getBody()->getContents());
+    }
+
+    /**
+     * @return string
+     */
+    public function getToken(): string
+    {
+        return $this->token;
     }
 }

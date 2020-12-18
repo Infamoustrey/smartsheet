@@ -4,7 +4,7 @@ namespace Smartsheet\Resources;
 
 use Smartsheet\SmartsheetClient;
 
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 class Row extends Resource
 {
@@ -17,11 +17,11 @@ class Row extends Resource
 
     protected Sheet $sheet;
 
-    public function __construct($data, Sheet $sheet = null)
+    public function __construct(SmartsheetClient $client, $data, Sheet $sheet = null)
     {
         parent::__construct($data);
 
-        $this->client = resolve(SmartsheetClient::class);
+        $this->client = $client;
 
         $this->sheet = $sheet ?? $this->client->getSheet($this->sheetId);
     }
@@ -31,7 +31,7 @@ class Row extends Resource
         return $this->id;
     }
 
-    public function getSheet()
+    public function getSheet(): Sheet
     {
         return $this->client->getSheet($this->sheetId);
     }
@@ -46,10 +46,10 @@ class Row extends Resource
     /**
      * @return Collection
      */
-    public function getCells()
+    public function getCells(): Collection
     {
         return collect($this->cells)->map(function ($cell) {
-            return new Cell($cell);
+            return new Cell($this->client, $cell);
         });
     }
 
@@ -60,9 +60,9 @@ class Row extends Resource
         ]);
     }
 
-    public function addAttachment(UploadedFile $file)
+    public function addAttachment(string $filepath): bool|string
     {
-        $authHeader = "Bearer " . config('services.smartsheet.token');
+        $authHeader = "Bearer " . $this->client->getToken();
 
         $request = curl_init("https://api.smartsheet.com/2.0/sheets/$this->sheetId/rows/$this->id/attachments");
 
@@ -72,11 +72,11 @@ class Row extends Resource
             CURLOPT_HTTPHEADER,
             [
                 'Authorization: ' . $authHeader,
-                'Content-Disposition: attachment; filename="' . $file->getClientOriginalName() . '"',
-                'Content-Type: ' . $file->getMimeType()
+                'Content-Disposition: attachment; filename="' . basename($filepath) . '"',
+                'Content-Type: ' . mime_content_type($filepath)
             ]
         );
-        curl_setopt($request, CURLOPT_POSTFIELDS, $file->get());
+        curl_setopt($request, CURLOPT_POSTFIELDS, file_get_contents($filepath));
         curl_setopt($request, CURLOPT_RETURNTRANSFER, true);
 
         $results = curl_exec($request);
