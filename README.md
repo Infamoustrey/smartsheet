@@ -117,7 +117,8 @@ Full api coverage! There's a lot missing, if you see something missing then put 
 Feel free to [submit a PR](https://github.com/Infamoustrey/smartsheet/compare), just be sure to explain what you are trying to fix/add when submitting it. 
 If you do decide to add functionality, it must be covered by a test. See the [contribution guide](./CONTRIBUTING.md) for more info. 
 
-To run the tests simply run
+To run the tests simply run, you'll want to add a `.env` file(see `.env.example`) with a valid api token value in the `SMARTSHEET_API_TOKEN` variable. 
+Tests are also run on pull requests. 
 
 ```bash
 $ ./vendor/bin/phpunit
