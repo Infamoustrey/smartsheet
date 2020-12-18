@@ -1,6 +1,18 @@
 # Smartsheet
 
-This library serves as a convenience wrapper around the [REST API that smartsheet exposes](https://smartsheet-platform.github.io/api-docs/).  
+This library serves as a convenience wrapper around the [REST API that smartsheet exposes](https://smartsheet-platform.github.io/api-docs/).
+It also uses the [Collections](https://packagist.org/packages/illuminate/collections) library from the Illuminate library in lieu of arrays, so check that out if you are unfamiliar with it.
+
+# Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage) 
+    - [Sheets](#sheets) 
+    - [Workspace](#workspace) 
+    - [Folder](#folder) 
+- [Issues](#issues)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
 
 ## Installation
 
@@ -12,14 +24,84 @@ $ composer require infamoustrey/smartsheet
 
 ## Usage 
 
-This api uses a fluent style for interacting with Smartsheet.
+This library provides a fluent api for interacting with Smartsheet.
 
 ```php
-
-$smartsheetClient = new \Smartsheet\Client([ 'token' => 'yourapitoken' ]);
+$smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
 
 $smartsheetClient->getSheet('sheetid');
+```
 
+### Sheets
+
+Fetch a list of sheets
+
+```php
+$smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
+
+$smartsheetClient->listSheets(); // Collection<Sheet>
+```
+
+Access a sheet, see the [Sheet Object](https://smartsheet-platform.github.io/api-docs/#sheet-object) for a list of possible properties.
+
+```php
+$smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
+
+$sheet = $smartsheetClient->getSheet('4583173393803140');
+
+// Access some fields
+$sheet->getId(); // '4583173393803140'
+$sheet->getName(); // 'sheet 1'
+
+// Add some rows
+$sheet->addRow([
+    'ID' => "39424808324",
+    'Transaction Desc' => "Toys",
+    'Amount' => 754.23,
+]);
+
+```
+
+### Workspace
+
+Fetch a workspace and access its properties. See the [Workspace Object](https://smartsheet-platform.github.io/api-docs/#objects-28) for a list of possible properties.
+
+```php
+$smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
+
+$worksheet = $smartsheetClient->getFolder('7116448184199044'); // Collection<Sheet>
+
+$workspace->getId(); // '7116448184199044'
+$workspace->getName(); // 'New workspace'
+
+$workspace->listSheets(); // Collection<Sheet>
+
+// Fetch a sheet by name
+$workspace->getSheet('sheet name'); // Sheet
+
+// Create a sheet with some columns
+$workspace->createSheet('sheet name', [
+    [
+        "title" => "Primary",
+        "type" => "TEXT_NUMBER",
+        "primary" => true
+    ]
+]);
+```
+
+### Folder
+
+Fetch a folder and access its properties. See the [Folder Object](https://smartsheet-platform.github.io/api-docs/#folders) for a list of possible properties.
+
+```php
+$smartsheetClient = new \Smartsheet\Client([ 'token' => 'yourapitoken' ]);
+
+$folder = $smartsheetClient->getFolder('7116448184199044'); // Collection<Sheet>
+
+// Access some fields
+$folder->id; // '7116448184199044'
+$folder->name; // 'Projects'
+$sheet = $folder->getSheet('sheet name');
 ```
 
 ## Issues
