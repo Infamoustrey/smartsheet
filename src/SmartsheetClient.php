@@ -16,11 +16,11 @@ class SmartsheetClient extends APIClient
         parent::__construct($config);
     }
 
-    protected function instantiateCollection(string $class, object|array $target): Collection {
-        $temp = [];
+    protected function instantiateCollection(string $class, array $target): Collection {
+        $temp = collect([]);
 
         foreach($target as $t) {
-            $temp = new $class($this, $target);
+            $temp->add(new $class($this, (array) $t));
         }
 
         return $temp;

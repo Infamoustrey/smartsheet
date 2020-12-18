@@ -14,7 +14,7 @@ class Folder extends Resource
     protected string $permaLink;
     protected array $sheets = [];
 
-    public function __construct(SmartsheetClient $client, $data)
+    public function __construct(SmartsheetClient $client, array $data)
     {
         parent::__construct($data);
 

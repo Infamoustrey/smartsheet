@@ -4,43 +4,50 @@ $dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '../.env');
 $dotenv->load();
 
 use PHPUnit\Framework\TestCase;
-use Smartsheet\Client;
-use Smartsheet\Sheet;
-use Smartsheet\Row;
+use Smartsheet\SmartsheetClient;
+use Smartsheet\Resources\Sheet;
+use Smartsheet\Resources\Row;
 
 class SheetsTest extends TestCase
 {
 
-    private function getClient()
+    protected function getClient(): SmartsheetClient
     {
-        return new Client(['token' => getenv('SMARTSHEET_API_TOKEN')]);
+        return new SmartsheetClient(['token' => getenv('SMARTSHEET_API_TOKEN')]);
     }
 
     public function testCanFetchSheets(): void
     {
-
         $sheetList = $this->getClient()->listSheets();
+        print('sheet count' . $sheetList->count());
+        $this->assertGreaterThan(0, $sheetList->count(), 'No Sheets were found.');
+    }
 
-        $this->assertNotEmpty($sheetList);
+    public function testCanFetchSheet(): void
+    {
+        $sheets = $this->getClient()->listSheets();
+
+        $sheet = $this->getClient()->getSheet($sheets[0]->getId());
+
+        $this->assertInstanceOf(Sheet::class, $sheet, 'Could not fetch sheet.');
     }
 
     public function testCanListColumns(): void
     {
-
         $sheets = $this->getClient()->listSheets();
 
-        $sheet = $this->getClient()->getSheet($sheets[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->getId());
 
         $columns = $sheet->getColumns();
 
-        $this->assertNotEmpty($columns);
+        $this->assertNotEmpty($columns, 'Unable to get sheet columns');
     }
 
     public function testCanInsertRows(): void
     {
         $sheets = $this->getClient()->listSheets();
 
-        $sheet = $this->getClient()->getSheet($sheets[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->getId());
 
         $columns = $sheet->getColumns();
 
@@ -55,11 +62,14 @@ class SheetsTest extends TestCase
         $this->assertEquals("SUCCESS", $response->message);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanLinkRow(): void
     {
         $sheets = $this->getClient()->listSheets();
 
-        $sheet = $this->getClient()->getSheet($sheets[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->getId());
 
         $columns = $sheet->getColumns();
 
@@ -70,6 +80,8 @@ class SheetsTest extends TestCase
         }
 
         $response = $sheet->addRow($row);
+
+        $this->assertNotNull($response, 'Unable to create row.');
 
         $row = $this->getClient()->getRow($sheet->getId(), $response->result->id);
 
@@ -80,14 +92,17 @@ class SheetsTest extends TestCase
             'url' => 'https://github.com/Infamoustrey/smartsheet'
         ]);
 
-        $this->assertEquals("SUCCESS", $response->message);
+        $this->assertEquals("SUCCESS", $response->message, 'Unable to create row.');
     }
 
+    /**
+     *
+     */
     public function testCanDeleteRow()
     {
         $sheets = $this->getClient()->listSheets();
 
-        $sheet = $this->getClient()->getSheet($sheets[0]->id);
+        $sheet = $this->getClient()->getSheet($sheets[0]->getId());
 
         $response = $sheet->deleteRow($sheet->getRows()[0]->getId());
 

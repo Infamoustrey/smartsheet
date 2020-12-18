@@ -2,6 +2,7 @@
 
 namespace Smartsheet\Resources;
 
+use GuzzleHttp\Psr7\Response;
 use Smartsheet\SmartsheetClient;
 
 use Illuminate\Support\Collection;
@@ -17,13 +18,13 @@ class Row extends Resource
 
     protected Sheet $sheet;
 
-    public function __construct(SmartsheetClient $client, $data, Sheet $sheet = null)
+    public function __construct(SmartsheetClient $client, array $data, Sheet $sheet = null)
     {
         parent::__construct($data);
 
         $this->client = $client;
 
-        $this->sheet = $sheet ?? $this->client->getSheet($this->sheetId);
+        $this->sheet = $sheet ?? $this->client->getSheet($data['sheetId']);
     }
 
     public function getId()
@@ -53,9 +54,9 @@ class Row extends Resource
         });
     }
 
-    public function addAttachmentLink(array $attachment)
+    public function addAttachmentLink(array $attachment): object
     {
-        $this->client->post("sheets/$this->sheetId/rows/$this->id/attachments", [
+        return $this->client->post("sheets/$this->sheetId/rows/$this->id/attachments", [
             'json' => $attachment
         ]);
     }

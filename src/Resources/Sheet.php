@@ -22,7 +22,7 @@ class Sheet extends Resource
     protected array $columns;
     protected array $rows;
 
-    public function __construct(SmartsheetClient $client, array|object $data)
+    public function __construct(SmartsheetClient $client, array $data)
     {
         parent::__construct($data);
 
@@ -67,7 +67,7 @@ class Sheet extends Resource
     public function getRows(): Collection
     {
         return collect($this->rows)->map(function ($row) {
-            return new Row($row, $this);
+            return new Row($this->client, (array) $row, $this);
         });
     }
 
@@ -128,12 +128,28 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param array $rows
-     * @return array
+     * @return object
      */
-    public function insertRows(array $rows): array
+    protected function insertRows(array $rows): object
     {
         return $this->client->post("sheets/$this->id/rows", [
             'json' => $rows
+        ]);
+    }
+
+
+    /**
+     * Adds a row to the sheet
+     *
+     * @param array $cells
+     * @return object
+     * @throws Exception
+     */
+    public function addRow(array $cells): object
+    {
+        return $this->insertRows([
+            'toBottom' => true,
+            'cells' => $this->generateRowCells($cells)
         ]);
     }
 
@@ -141,43 +157,41 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param array $rows
-     * @return array
+     * @return object
      */
-    public function addRows(array $rows): array
+    public function addRows(array $rows): object
     {
-
-        $rowsToInsert = collect($rows)->map(function ($cells) {
-            return [
-                'toBottom' => true,
-                'cells' => $this->generateRowCells($cells)
-            ];
-        });
-
         return $this->insertRows(
-            $rowsToInsert->toArray()
+            collect($rows)
+                ->map(function ($cells) {
+                    return [
+                        'toBottom' => true,
+                        'cells' => $this->generateRowCells($cells)
+                    ];
+                })
+                ->toArray()
         );
     }
 
-    public function updateRows(array $rows)
+    /**
+     * @param array $rows
+     * @throws Exception
+     */
+    public function updateRows(array $rows): void
     {
-
-        $rowsToUpdate = [];
-
         foreach ($rows as $id => $row) {
-            $rowsToUpdate[] = [
-                'id' => $id,
-                'cells' => $this->generateRowCells($row)
-            ];
+            $this->updateRow($id, $row);
         }
-
-        return $this->client->put("sheets/$this->id/rows", [
-            'json' => $rowsToUpdate
-        ]);
     }
 
-    public function updateRow($rowId, array $cells)
+    /**
+     * @param $rowId
+     * @param array $cells
+     * @return mixed
+     * @throws Exception
+     */
+    public function updateRow($rowId, array $cells): mixed
     {
-
         $rowsToUpdate[] = [
             'id' => $rowId,
             'cells' => $this->generateRowCells($cells)
@@ -188,26 +202,12 @@ class Sheet extends Resource
         ]);
     }
 
-    /**
-     * Adds a row to the sheet
-     *
-     * @param array $cells
-     * @return array
-     */
-    public function createRow(array $cells)
-    {
-        return $this->insertRows([
-            'toBottom' => true,
-            'cells' => $this->generateRowCells($cells)
-        ]);
-    }
-
-    public function getId()
+    public function getId(): string
     {
         return $this->id;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -233,8 +233,21 @@ class Sheet extends Resource
         ]);
     }
 
+    public function deleteRow(string $rowId)
+    {
+        return $this->deleteRows([$rowId]);
+    }
+
     public function deleteRows(array $rowIds)
     {
         return $this->client->delete("sheets/$this->id/rows?ids=" . implode(',', $rowIds));
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumns(): array
+    {
+        return $this->columns;
     }
 }
