@@ -10,7 +10,6 @@ try {
 use PHPUnit\Framework\TestCase;
 use Smartsheet\SmartsheetClient;
 use Smartsheet\Resources\Sheet;
-use Smartsheet\Resources\Row;
 
 class SheetsTest extends TestCase
 {
@@ -47,6 +46,9 @@ class SheetsTest extends TestCase
         $this->assertNotEmpty($columns, 'Unable to get sheet columns');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCanInsertRows(): void
     {
         $sheets = $this->getClient()->listSheets();
