@@ -1,7 +1,11 @@
 <?php
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '../.env');
-$dotenv->load();
+try {
+    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__, '../.env');
+    $dotenv->load();
+} catch (Exception $exception) {
+    print('Attempting to get config from ENV');
+}
 
 use PHPUnit\Framework\TestCase;
 use Smartsheet\SmartsheetClient;
