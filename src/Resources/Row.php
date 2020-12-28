@@ -2,7 +2,6 @@
 
 namespace Smartsheet\Resources;
 
-use GuzzleHttp\Psr7\Response;
 use Smartsheet\SmartsheetClient;
 
 use Illuminate\Support\Collection;

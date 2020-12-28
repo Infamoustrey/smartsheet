@@ -21,6 +21,11 @@ class Workspace extends Resource
     protected string $name;
     protected array $sheets = [];
 
+    /**
+     * Workspace constructor.
+     * @param SmartsheetClient $client
+     * @param $data
+     */
     public function __construct(SmartsheetClient $client, $data)
     {
         parent::__construct($data);
@@ -42,6 +47,17 @@ class Workspace extends Resource
                 'columns' => $columns
             ]
         ]);
+    }
+
+    /**
+     * Fetches the sheet if it exists
+     * @param string $name
+     * @return Sheet $sheet
+     * @throws Exception
+     */
+    public function getSheet(string $name): Sheet
+    {
+        return $this->client->getSheet($this->getSheetId($name));
     }
 
     /**
@@ -72,20 +88,6 @@ class Workspace extends Resource
         return $sheet->id;
     }
 
-    /**
-     * Fetches the sheet if it exists
-     * @param string $name
-     * @return Sheet $sheet
-     * @throws Exception
-     */
-    public function getSheet(string $name): Sheet
-    {
-        return $this->client->getSheet($this->getSheetId($name));
-    }
-
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
@@ -95,4 +97,5 @@ class Workspace extends Resource
     {
         return $this->name;
     }
+
 }

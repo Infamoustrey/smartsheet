@@ -9,7 +9,6 @@ use GuzzleHttp\Client as GuzzleClient;
  */
 class APIClient
 {
-
     protected const BASE_URL = "https://api.smartsheet.com/2.0/";
 
     protected GuzzleClient $guzzleClient;

@@ -8,7 +8,6 @@ use Illuminate\Support\Collection;
 
 class Sheet extends Resource
 {
-
     protected SmartsheetClient $client;
 
     protected string $id;
@@ -66,9 +65,10 @@ class Sheet extends Resource
 
     public function getRows(): Collection
     {
-        return collect($this->rows)->map(function ($row) {
-            return new Row($this->client, (array) $row, $this);
-        });
+        return collect($this->rows)
+            ->map(function ($row) {
+                return new Row($this->client, (array) $row, $this);
+            });
     }
 
     /**
@@ -78,7 +78,6 @@ class Sheet extends Resource
      */
     public function getColumnId($title): string
     {
-
         $column = collect($this->columns)
             ->first(function ($col) use ($title) {
                 return $col->title == $title;

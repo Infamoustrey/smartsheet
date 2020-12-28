@@ -16,11 +16,12 @@ class SmartsheetClient extends APIClient
         parent::__construct($config);
     }
 
-    protected function instantiateCollection(string $class, array $target): Collection {
+    protected function instantiateCollection(string $class, array $target): Collection
+    {
         $temp = collect([]);
 
-        foreach($target as $t) {
-            $temp->add(new $class($this, (array) $t));
+        foreach ($target as $t) {
+            $temp->add(new $class($this, (array)$t));
         }
 
         return $temp;
@@ -65,7 +66,7 @@ class SmartsheetClient extends APIClient
     {
         $response = $this->get("sheets/$sheetId");
 
-        return new Sheet($this, (array) $response);
+        return new Sheet($this, (array)$response);
     }
 
     /**
@@ -84,6 +85,7 @@ class SmartsheetClient extends APIClient
 
     /**
      * Fetch a folder with a given ID
+     *
      * @param string $folderId
      * @return Folder
      */
@@ -94,6 +96,7 @@ class SmartsheetClient extends APIClient
 
     /**
      * Fetch a workspace with a given ID
+     *
      * @param string $workspaceId
      * @return Workspace
      */
