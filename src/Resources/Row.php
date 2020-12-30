@@ -49,7 +49,7 @@ class Row extends Resource
     public function getCells(): Collection
     {
         return collect($this->cells)->map(function ($cell) {
-            return new Cell($this->client, $cell);
+            return new Cell($this->client, (array) $cell);
         });
     }
 
