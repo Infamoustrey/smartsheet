@@ -60,7 +60,7 @@ class Row extends Resource
         ]);
     }
 
-    public function addAttachment(string $filepath): bool|string
+    public function addAttachment(string $filepath): string
     {
         $authHeader = "Bearer " . $this->client->getToken();
 

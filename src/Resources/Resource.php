@@ -25,7 +25,7 @@ class Resource
         return $this->$key;
     }
 
-    public function toJSON(): bool|string
+    public function toJSON(): string
     {
         return json_encode($this->data);
     }
