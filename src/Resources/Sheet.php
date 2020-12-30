@@ -28,6 +28,24 @@ class Sheet extends Resource
         $this->client = $client;
     }
 
+    public function dropAndReplace(array $rows)
+    {
+        $this->dropAllRows();
+
+        $this->addRows($rows);
+    }
+
+    public function dropAllRows()
+    {
+        foreach (collect($this->get('rows'))->chunk(100) as $chunk) {
+            $this->deleteRows(
+                $chunk
+                    ->pluck('id')
+                    ->toArray()
+            );
+        }
+    }
+
     public function dropAllColumnsExcept(array $columnNames)
     {
         $columnsToDelete = collect($this->columns)->filter(function ($column) use ($columnNames) {
@@ -176,11 +194,20 @@ class Sheet extends Resource
      * @param array $rows
      * @throws Exception
      */
-    public function updateRows(array $rows): void
+    public function updateRows(array $rows)
     {
+        $rowsToUpdate = [];
+
         foreach ($rows as $id => $row) {
-            $this->updateRow($id, $row);
+            $rowsToUpdate[] = [
+                'id' => $id,
+                'cells' => $this->generateRowCells($row)
+            ];
         }
+
+        return $this->client->put("sheets/$this->id/rows", [
+            'json' => $rowsToUpdate
+        ]);
     }
 
     /**
@@ -198,6 +225,61 @@ class Sheet extends Resource
 
         return $this->client->put("sheets/$this->id/rows", [
             'json' => $rowsToUpdate
+        ]);
+    }
+
+    public function replaceFirstRow(array $cells)
+    {
+        if (count($this->rows) > 0) {
+            $this->updateRow($this->rows[0]->id, $cells);
+        } else {
+            $this->addRows([$cells]);
+        }
+    }
+
+    public function sync(array $rows, string $primaryColumnName = 'primary')
+    {
+        $this->replaceRows($rows, $primaryColumnName);
+    }
+
+    public function replaceRows(array $cells, string $primaryColumnName)
+    {
+        if (count($this->rows) > 0) {
+            $rowsToUpdate = [];
+
+            foreach ($cells as $cell) {
+                foreach ($this->getRows() as $row) {
+                    if ($row->getCell($primaryColumnName) == $cell[$primaryColumnName]) {
+                        $id = $row->getId();
+                    }
+                }
+
+                if (isset($id)) {
+                    $rowsToUpdate[$id] = $cell;
+                }
+            }
+
+            $this->updateRows($rowsToUpdate);
+        } else {
+
+            $this->dropAllRows();
+
+            $this->addRows([$cells]);
+        }
+    }
+
+    /**
+     * Adds a row to the sheet
+     *
+     * @param array $cells
+     * @return object|array
+     * @throws Exception
+     */
+    public function createRow(array $cells): object|array
+    {
+        return $this->insertRows([
+            'toBottom' => true,
+            'cells' => $this->generateRowCells($cells)
         ]);
     }
 

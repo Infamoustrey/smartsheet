@@ -21,6 +21,33 @@ class Folder extends Resource
         $this->client = $client;
     }
 
+    public function createSheets(array $sheetNames, $columns = DEFAULT_COLUMNS): Folder
+    {
+        $sheets = collect($this->getSheets());
+
+        foreach ($sheetNames as $sheetName) {
+            if (is_null($sheets->firstWhere('name', $sheetName))) {
+                $this->createSheet($sheetName, $columns);
+            }
+        }
+
+        return $this->client->getFolder($this->id);
+    }
+
+    /**
+     *
+     * @throws SmartsheetApiException
+     */
+    public function createSheet($name, $columns = DEFAULT_COLUMNS)
+    {
+        return $this->client->post("folders/$this->id/sheets", [
+            'json' => [
+                'name' => $name,
+                'columns' => $columns
+            ]
+        ]);
+    }
+
     /**
      * @return string
      */
