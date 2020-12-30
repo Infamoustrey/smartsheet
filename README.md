@@ -1,5 +1,7 @@
 # Smartsheet
 
+[![Latest Stable Version](https://poser.pugx.org/infamoustrey/smartsheet/v)](//packagist.org/packages/infamoustrey/smartsheet) [![Total Downloads](https://poser.pugx.org/infamoustrey/smartsheet/downloads)](//packagist.org/packages/infamoustrey/smartsheet) [![Latest Unstable Version](https://poser.pugx.org/infamoustrey/smartsheet/v/unstable)](//packagist.org/packages/infamoustrey/smartsheet) [![License](https://poser.pugx.org/infamoustrey/smartsheet/license)](//packagist.org/packages/infamoustrey/smartsheet)
+
 This library serves as a convenience wrapper around the [REST API that smartsheet exposes](https://smartsheet-platform.github.io/api-docs/).
 It also uses the [Collections](https://packagist.org/packages/illuminate/collections) library from the Illuminate library in lieu of arrays, so check that out if you are unfamiliar with it.
 
