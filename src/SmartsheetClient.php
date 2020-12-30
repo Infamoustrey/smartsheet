@@ -91,7 +91,7 @@ class SmartsheetClient extends APIClient
      */
     public function getFolder(string $folderId): Folder
     {
-        return new Folder($this, $this->get("folders/$folderId"));
+        return new Folder($this, (array) $this->get("folders/$folderId"));
     }
 
     /**

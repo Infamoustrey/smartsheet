@@ -19,6 +19,11 @@ class SheetsTest extends TestCase
         return new SmartsheetClient(['token' => getenv('SMARTSHEET_API_TOKEN')]);
     }
 
+    public function testCanFetchFolder(): void {
+        $folder = $this->getClient()->getFolder('2877722042099588');
+        $this->assertNotNull($folder);
+    }
+
     public function testCanFetchSheets(): void
     {
         $sheetList = $this->getClient()->listSheets();
