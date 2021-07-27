@@ -21,7 +21,7 @@ It also uses the [Collections](https://packagist.org/packages/illuminate/collect
 The preferred method of installing this library is with Composer by running the following from your project root:
 
 ```bash
-$ composer require infamoustrey/smartsheet
+composer require infamoustrey/smartsheet
 ```
 
 ## Usage 
