@@ -123,5 +123,5 @@ To run the tests simply run, you'll want to add a `.env` file(see `.env.example`
 Tests are also run on pull requests. 
 
 ```bash
-$ ./vendor/bin/phpunit
+./vendor/bin/phpunit
 ```
