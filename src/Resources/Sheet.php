@@ -331,4 +331,33 @@ class Sheet extends Resource
     {
         return $this->columns;
     }
+
+    public function addSummaryField(String $title, String $formula, String $type = 'TEXT_NUMBER')
+    {
+        $options = [
+                [
+                'title' => $title,
+                'type' => $type,
+                'formula' => $formula
+            ]
+        ];
+        return $this->client->post("sheets/$this->id/summary/fields", 
+            ['json' => [...$options]]
+        );
+    }
+
+    public function getSummaryFields()
+    {
+        return $this->client->get("sheets/$this->id/summary");
+    }
+
+    public function deleteSummaryFields(array $fieldIds)
+    {
+        return $this->client->delete("sheets/$this->id/summary/fields?ids=". implode(',', $fieldIds));
+    }
+
+    public function deleteSummaryField(String $fieldId)
+    {
+        return $this->deleteSummaryFields([$fieldId]);
+    }
 }
