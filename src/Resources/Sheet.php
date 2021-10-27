@@ -332,6 +332,18 @@ class Sheet extends Resource
         return $this->columns;
     }
 
+    public function addColumn(array $column)
+    {
+        return $this->addColumns([$column]);
+    }
+
+    public function addColumns(array $column)
+    {
+        return $this->client->post("sheets/$this->id/columns", [
+            'json' => $column
+        ]);
+    }
+
     public function addSummaryField(String $title, String $formula, String $type = 'TEXT_NUMBER')
     {
         $options = [
@@ -359,5 +371,14 @@ class Sheet extends Resource
     public function deleteSummaryField(String $fieldId)
     {
         return $this->deleteSummaryFields([$fieldId]);
+    }
+
+    public function deleteAllSummaryFields()
+    {
+        return $this->deleteSummaryFields(
+            collect($this->getSummaryFields()->fields)
+                ->pluck('id')
+                ->toArray()
+        );
     }
 }
