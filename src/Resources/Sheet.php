@@ -337,10 +337,10 @@ class Sheet extends Resource
         return $this->addColumns([$column]);
     }
 
-    public function addColumns(array $column)
+    public function addColumns(array $columns)
     {
         return $this->client->post("sheets/$this->id/columns", [
-            'json' => $column
+            'json' => $columns
         ]);
     }
 
@@ -356,6 +356,32 @@ class Sheet extends Resource
         return $this->client->post("sheets/$this->id/summary/fields", 
             ['json' => [...$options]]
         );
+    }
+
+    public function updateSummaryFieldByName(String $fieldName, array $summaryFieldDefinition)
+    {
+        $summaryField = $this->getSummaryFieldByName($fieldName);
+        $summaryFieldDefinition['id'] = $summaryField->id;
+        
+        return $this->updateSummaryField($summaryFieldDefinition);
+    }
+
+    public function updateSummaryField(array $summaryField)
+    {
+        return $this->updateSummaryFields([$summaryField]);
+    }
+
+    public function updateSummaryFields(array $summaryFields)
+    {
+        return $this->client->put("sheets/$this->id/summary/fields", 
+            ['json' => [...$summaryFields]]
+        );
+    }
+
+    public function getSummaryFieldByName(String $fieldName)
+    {
+        return collect($this->getSummaryFields()->fields)
+            ->first(fn ($field) => $field->title == $fieldName);
     }
 
     public function getSummaryFields()
