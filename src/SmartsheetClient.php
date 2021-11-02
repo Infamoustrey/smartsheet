@@ -102,7 +102,7 @@ class SmartsheetClient extends APIClient
      */
     public function getWorkspace(string $workspaceId): Workspace
     {
-        return new Workspace($this, $this->get("workspaces/$workspaceId"));
+        return new Workspace($this, (array) $this->get("workspaces/$workspaceId"));
     }
 
     /**

@@ -32,7 +32,9 @@ class Sheet extends Resource
     {
         $this->dropAllRows();
 
-        $this->addRows($rows);
+        foreach (collect($rows)->chunk(500) as $chunk) {
+            $this->addRows($chunk->toArray());
+        }
     }
 
     public function dropAllRows()
@@ -186,6 +188,7 @@ class Sheet extends Resource
                         'cells' => $this->generateRowCells($cells)
                     ];
                 })
+                ->values()
                 ->toArray()
         );
     }
@@ -272,10 +275,10 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param array $cells
-     * @return array
+     * @return object
      * @throws Exception
      */
-    public function createRow(array $cells): array
+    public function createRow(array $cells): object
     {
         return $this->insertRows([
             'toBottom' => true,
