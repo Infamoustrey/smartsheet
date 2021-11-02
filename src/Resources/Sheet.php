@@ -275,10 +275,10 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param array $cells
-     * @return array
+     * @return object
      * @throws Exception
      */
-    public function createRow(array $cells): array
+    public function createRow(array $cells): object
     {
         return $this->insertRows([
             'toBottom' => true,
