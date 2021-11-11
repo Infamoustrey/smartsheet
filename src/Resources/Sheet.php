@@ -39,7 +39,7 @@ class Sheet extends Resource
 
     public function dropAllRows()
     {
-        foreach (collect($this->get('rows'))->chunk(100) as $chunk) {
+        foreach (collect($this->get('rows'))->chunk(400) as $chunk) {
             $this->deleteRows(
                 $chunk
                     ->pluck('id')
