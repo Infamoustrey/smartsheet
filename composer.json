@@ -19,7 +19,7 @@
   "require": {
     "php": "^7.4|^8.0",
     "guzzlehttp/guzzle": "^7.2.0",
-    "illuminate/collections": "^8.19",
+    "illuminate/collections": "*",
     "ext-json": "*",
     "ext-curl": "*"
   },
