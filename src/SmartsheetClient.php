@@ -51,9 +51,9 @@ class SmartsheetClient extends APIClient
     /**
      * List Account Sheets
      */
-    public function listSheets(): Collection
+    public function listSheets(array $options = []): Collection
     {
-        return $this->instantiateCollection(Sheet::class, $this->get('sheets')->data);
+        return $this->instantiateCollection(Sheet::class, $this->get('sheets', $options)->data);
     }
 
     /**
