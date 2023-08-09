@@ -33,7 +33,8 @@ class APIClient
             'base_uri' => self::BASE_URL,
             'headers' => [
                 'Authorization' => $authHeader
-            ]
+            ],
+            'proxy' => !empty($config['proxy']) ? $config['proxy'] : null
         ]);
     }
 
