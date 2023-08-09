@@ -126,6 +126,13 @@ class Sheet extends Resource
                         'columnId' => $this->getColumnId($title),
                         'formula' => $value['formula']
                     ];
+               }
+               else if (key_exists('hyperlink', $value)) {
+                    $newCells[] = [
+                        'columnId'	 => $this->getColumnId($title),
+                        'value'		 => $value['value'],
+                        'hyperlink'	 => $value['hyperlink']
+                    ];
                 } else {
                     $newCells[] = [
                         'columnId' => $this->getColumnId($title),
