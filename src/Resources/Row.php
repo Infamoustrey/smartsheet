@@ -17,7 +17,7 @@ class Row extends Resource
 
     protected Sheet $sheet;
 
-    public function __construct(SmartsheetClient $client, array $data, Sheet $sheet = null)
+    public function __construct(SmartsheetClient $client, array $data, ?Sheet $sheet = null)
     {
         parent::__construct($data);
 

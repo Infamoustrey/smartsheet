@@ -11,7 +11,9 @@ class Resource
         $this->data = $data;
 
         foreach ($this->data as $key => $value) {
-            $this->$key = $value;
+            if (property_exists($this, $key)) {
+                $this->$key = $value;
+            }
         }
     }
 
@@ -22,7 +24,7 @@ class Resource
 
     public function get($key)
     {
-        return $this->$key;
+        return $this->data[$key] ?? null;
     }
 
     public function toJSON(): string
