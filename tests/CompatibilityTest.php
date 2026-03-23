@@ -1,6 +1,5 @@
 <?php
-
-use PHPUnit\Framework\TestCase;
+ 
 use Smartsheet\Resources\Resource;
 use Smartsheet\Resources\Row;
 

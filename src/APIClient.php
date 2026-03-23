@@ -29,13 +29,22 @@ class APIClient
 
         $authHeader = "Bearer " . $this->token;
 
-        $this->guzzleClient = new GuzzleClient([
+        $clientConfig = [
             'base_uri' => self::BASE_URL,
             'headers' => [
                 'Authorization' => $authHeader
-            ],
-            'proxy' => !empty($config['proxy']) ? $config['proxy'] : null
-        ]);
+            ]
+        ];
+
+        if (!empty($config['proxy'])) {
+            $clientConfig['proxy'] = $config['proxy'];
+        }
+
+        if (!empty($config['handler'])) {
+            $clientConfig['handler'] = $config['handler'];
+        }
+
+        $this->guzzleClient = $config['http_client'] ?? new GuzzleClient($clientConfig);
     }
 
     public function get(string $uri, array $options = [])
