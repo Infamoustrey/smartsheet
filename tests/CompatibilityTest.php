@@ -30,6 +30,21 @@ class CompatibilityTest extends TestCase
         $this->assertSame('bar', $resource->get('foo'));
     }
 
+    public function testDeclaredPropertiesAreStillHydratedFromPayload(): void
+    {
+        $resource = new class (['id' => 'sheet-123']) extends Resource {
+            protected string $id;
+
+            public function getId(): string
+            {
+                return $this->id;
+            }
+        };
+
+        $this->assertSame('sheet-123', $resource->getId());
+        $this->assertSame('sheet-123', $resource->get('id'));
+    }
+
     public function testLoadingRowClassDoesNotEmitImplicitNullableDeprecations(): void
     {
         $deprecations = [];
