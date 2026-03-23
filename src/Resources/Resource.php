@@ -2,6 +2,7 @@
 
 namespace Smartsheet\Resources;
 
+#[\AllowDynamicProperties]
 class Resource
 {
     protected array $data;
