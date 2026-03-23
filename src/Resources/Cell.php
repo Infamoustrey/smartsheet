@@ -31,8 +31,6 @@ class Cell extends Resource
 
     /**
      * Returns either the formula or the value depending on if the cell uses a formula
-     *
-     * @return string
      */
     public function getValue(): string
     {

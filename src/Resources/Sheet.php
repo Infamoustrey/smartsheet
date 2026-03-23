@@ -131,8 +131,6 @@ class Sheet extends Resource
 
     /**
      * Get the sheet rows as hydrated row resources.
-     *
-     * @return Collection
      */
     public function getRows(): Collection
     {
@@ -146,7 +144,6 @@ class Sheet extends Resource
      * Get the identifier for a column by title.
      *
      * @param  mixed  $title  The column title.
-     * @return string
      *
      * @throws Exception
      */
@@ -168,7 +165,6 @@ class Sheet extends Resource
      * Convert row cell input into Smartsheet row cell payloads.
      *
      * @param  array  $cells  The row cells keyed by column title.
-     * @return array
      *
      * @throws Exception
      */
@@ -210,7 +206,6 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param  array  $rows  The row payload to send to the API.
-     * @return object
      */
     protected function insertRows(array $rows): object
     {
@@ -223,7 +218,6 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param  array  $cells  The row values keyed by column title.
-     * @return object
      *
      * @throws Exception
      */
@@ -239,7 +233,6 @@ class Sheet extends Resource
      * Add multiple rows to the sheet.
      *
      * @param  array  $rows  A list of row definitions keyed by column title.
-     * @return object
      */
     public function addRows(array $rows): object
     {
@@ -285,7 +278,6 @@ class Sheet extends Resource
      *
      * @param  mixed  $rowId  The row identifier.
      * @param  array  $cells  The row values keyed by column title.
-     * @return mixed
      *
      * @throws Exception
      */
@@ -365,7 +357,6 @@ class Sheet extends Resource
      * Adds a row to the sheet
      *
      * @param  array  $cells  The row values keyed by column title.
-     * @return object
      *
      * @throws Exception
      */
@@ -455,8 +446,6 @@ class Sheet extends Resource
 
     /**
      * Get the sheet columns payload.
-     *
-     * @return array
      */
     public function getColumns(): array
     {

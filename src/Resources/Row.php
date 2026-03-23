@@ -68,8 +68,6 @@ class Row extends Resource
 
     /**
      * Get the row cells as hydrated cell resources.
-     *
-     * @return Collection
      */
     public function getCells(): Collection
     {
@@ -82,7 +80,6 @@ class Row extends Resource
      * Add a link attachment to the row.
      *
      * @param  array  $attachment  The attachment payload.
-     * @return object
      */
     public function addAttachmentLink(array $attachment): object
     {
@@ -95,7 +92,6 @@ class Row extends Resource
      * Upload a file attachment to the row.
      *
      * @param  string  $filepath  The local file path to upload.
-     * @return string
      */
     public function addAttachment(string $filepath): string
     {

@@ -24,8 +24,6 @@ class Resource
 
     /**
      * Get the full raw resource payload.
-     *
-     * @return array
      */
     public function getData(): array
     {

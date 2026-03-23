@@ -35,7 +35,6 @@ class Folder extends Resource
      *
      * @param  array  $sheetNames  The list of sheet names to ensure exist.
      * @param  mixed  $columns  The column definition payload for new sheets.
-     * @return Folder
      */
     public function createSheets(array $sheetNames, $columns = DEFAULT_COLUMNS): Folder
     {
@@ -79,8 +78,6 @@ class Folder extends Resource
 
     /**
      * Get the folder sheets payload.
-     *
-     * @return array
      */
     public function getSheets(): array
     {
@@ -91,7 +88,6 @@ class Folder extends Resource
      * Fetches the sheet if it exists
      *
      * @param  string  $name  The sheet name.
-     * @return string
      *
      * @throws Exception
      */
@@ -113,7 +109,6 @@ class Folder extends Resource
      * Fetches the sheet if it exists
      *
      * @param  string  $name  The sheet name.
-     * @return Sheet
      *
      * @throws Exception
      */

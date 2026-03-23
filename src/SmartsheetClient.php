@@ -26,7 +26,6 @@ class SmartsheetClient extends APIClient
      *
      * @param  class-string  $class  The resource class to instantiate.
      * @param  array  $target  The raw API payload items.
-     * @return Collection
      */
     protected function instantiateCollection(string $class, array $target): Collection
     {
@@ -41,8 +40,6 @@ class SmartsheetClient extends APIClient
 
     /**
      * List account contacts.
-     *
-     * @return Collection
      */
     public function listContacts(): Collection
     {
@@ -64,8 +61,6 @@ class SmartsheetClient extends APIClient
 
     /**
      * List account sheets.
-     *
-     * @return Collection
      */
     public function listSheets(): Collection
     {
@@ -76,7 +71,6 @@ class SmartsheetClient extends APIClient
      * Fetch a specific sheet.
      *
      * @param  string  $sheetId  The sheet identifier.
-     * @return Sheet
      */
     public function getSheet(string $sheetId): Sheet
     {
@@ -90,7 +84,6 @@ class SmartsheetClient extends APIClient
      *
      * @param  string  $sheetId  The parent sheet identifier.
      * @param  string  $rowId  The row identifier.
-     * @return Row
      */
     public function getRow(string $sheetId, string $rowId): Row
     {
@@ -103,7 +96,6 @@ class SmartsheetClient extends APIClient
      * Fetch a folder with a given ID.
      *
      * @param  string  $folderId  The folder identifier.
-     * @return Folder
      */
     public function getFolder(string $folderId): Folder
     {
@@ -114,7 +106,6 @@ class SmartsheetClient extends APIClient
      * Fetch a workspace with a given ID.
      *
      * @param  string  $workspaceId  The workspace identifier.
-     * @return Workspace
      */
     public function getWorkspace(string $workspaceId): Workspace
     {
@@ -123,8 +114,6 @@ class SmartsheetClient extends APIClient
 
     /**
      * Returns a list of workspaces.
-     *
-     * @return Collection
      */
     public function listWorkspaces(): Collection
     {

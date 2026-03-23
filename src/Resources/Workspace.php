@@ -41,7 +41,6 @@ class Workspace extends Resource
      *
      * @param  mixed  $name  The sheet name.
      * @param  array[]  $columns
-     * @return mixed
      */
     public function createSheet($name, $columns = DEFAULT_COLUMNS): mixed
     {
@@ -57,7 +56,6 @@ class Workspace extends Resource
      * Fetches the sheet if it exists
      *
      * @param  string  $name  The sheet name.
-     * @return Sheet
      *
      * @throws Exception
      */
@@ -68,8 +66,6 @@ class Workspace extends Resource
 
     /**
      * Get the workspace sheets payload.
-     *
-     * @return array
      */
     public function getSheets(): array
     {
@@ -80,7 +76,6 @@ class Workspace extends Resource
      * Fetches the sheet if it exists
      *
      * @param  string  $name  The sheet name.
-     * @return string
      *
      * @throws Exception
      */
