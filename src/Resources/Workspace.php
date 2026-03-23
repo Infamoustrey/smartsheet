@@ -24,7 +24,10 @@ class Workspace extends Resource
     protected array $sheets = [];
 
     /**
-     * Workspace constructor.
+     * Create a workspace resource.
+     *
+     * @param  SmartsheetClient  $client  The API client instance.
+     * @param  mixed  $data  The raw workspace payload.
      */
     public function __construct(SmartsheetClient $client, $data)
     {
@@ -34,7 +37,11 @@ class Workspace extends Resource
     }
 
     /**
+     * Create a sheet inside the workspace.
+     *
+     * @param  mixed  $name  The sheet name.
      * @param  array[]  $columns
+     * @return mixed
      */
     public function createSheet($name, $columns = DEFAULT_COLUMNS): mixed
     {
@@ -49,7 +56,8 @@ class Workspace extends Resource
     /**
      * Fetches the sheet if it exists
      *
-     * @return Sheet $sheet
+     * @param  string  $name  The sheet name.
+     * @return Sheet
      *
      * @throws Exception
      */
@@ -58,6 +66,11 @@ class Workspace extends Resource
         return $this->client->getSheet($this->getSheetId($name));
     }
 
+    /**
+     * Get the workspace sheets payload.
+     *
+     * @return array
+     */
     public function getSheets(): array
     {
         return $this->sheets;
@@ -66,7 +79,8 @@ class Workspace extends Resource
     /**
      * Fetches the sheet if it exists
      *
-     * @return string $id
+     * @param  string  $name  The sheet name.
+     * @return string
      *
      * @throws Exception
      */
@@ -84,11 +98,17 @@ class Workspace extends Resource
         return $sheet->id;
     }
 
+    /**
+     * Get the workspace identifier.
+     */
     public function getId(): string
     {
         return $this->id;
     }
 
+    /**
+     * Get the workspace name.
+     */
     public function getName(): string
     {
         return $this->name;

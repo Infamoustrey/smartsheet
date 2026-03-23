@@ -11,11 +11,23 @@ use Smartsheet\Resources\Workspace;
 
 class SmartsheetClient extends APIClient
 {
+    /**
+     * Create a Smartsheet API client.
+     *
+     * @param  array  $config  Client configuration passed to the API client.
+     */
     public function __construct(array $config = [])
     {
         parent::__construct($config);
     }
 
+    /**
+     * Hydrate a collection of Smartsheet resources.
+     *
+     * @param  class-string  $class  The resource class to instantiate.
+     * @param  array  $target  The raw API payload items.
+     * @return Collection
+     */
     protected function instantiateCollection(string $class, array $target): Collection
     {
         $temp = collect([]);
@@ -28,7 +40,9 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * List Account Contacts
+     * List account contacts.
+     *
+     * @return Collection
      */
     public function listContacts(): Collection
     {
@@ -49,7 +63,9 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * List Account Sheets
+     * List account sheets.
+     *
+     * @return Collection
      */
     public function listSheets(): Collection
     {
@@ -57,7 +73,10 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * Fetch a specific sheet
+     * Fetch a specific sheet.
+     *
+     * @param  string  $sheetId  The sheet identifier.
+     * @return Sheet
      */
     public function getSheet(string $sheetId): Sheet
     {
@@ -67,7 +86,11 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * Fetch a specific row in a sheet
+     * Fetch a specific row in a sheet.
+     *
+     * @param  string  $sheetId  The parent sheet identifier.
+     * @param  string  $rowId  The row identifier.
+     * @return Row
      */
     public function getRow(string $sheetId, string $rowId): Row
     {
@@ -77,7 +100,10 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * Fetch a folder with a given ID
+     * Fetch a folder with a given ID.
+     *
+     * @param  string  $folderId  The folder identifier.
+     * @return Folder
      */
     public function getFolder(string $folderId): Folder
     {
@@ -85,7 +111,10 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * Fetch a workspace with a given ID
+     * Fetch a workspace with a given ID.
+     *
+     * @param  string  $workspaceId  The workspace identifier.
+     * @return Workspace
      */
     public function getWorkspace(string $workspaceId): Workspace
     {
@@ -93,7 +122,9 @@ class SmartsheetClient extends APIClient
     }
 
     /**
-     * Returns a list of workspaces
+     * Returns a list of workspaces.
+     *
+     * @return Collection
      */
     public function listWorkspaces(): Collection
     {

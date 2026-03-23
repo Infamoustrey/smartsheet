@@ -19,6 +19,13 @@ class Row extends Resource
 
     protected Sheet $sheet;
 
+    /**
+     * Create a row resource.
+     *
+     * @param  SmartsheetClient  $client  The API client instance.
+     * @param  array  $data  The raw row payload.
+     * @param  Sheet|null  $sheet  The already-hydrated parent sheet, if available.
+     */
     public function __construct(SmartsheetClient $client, array $data, ?Sheet $sheet = null)
     {
         parent::__construct($data);
@@ -28,16 +35,30 @@ class Row extends Resource
         $this->sheet = $sheet ?? $this->client->getSheet($data['sheetId']);
     }
 
+    /**
+     * Get the row identifier.
+     *
+     * @return string
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * Fetch the parent sheet for the row.
+     */
     public function getSheet(): Sheet
     {
         return $this->client->getSheet($this->sheetId);
     }
 
+    /**
+     * Get a cell by column name.
+     *
+     * @param  string  $columnName  The column title to match.
+     * @return mixed
+     */
     public function getCell(string $columnName)
     {
         return $this->getCells()->first(function ($cell) use ($columnName) {
@@ -45,6 +66,11 @@ class Row extends Resource
         });
     }
 
+    /**
+     * Get the row cells as hydrated cell resources.
+     *
+     * @return Collection
+     */
     public function getCells(): Collection
     {
         return collect($this->cells)->map(function ($cell) {
@@ -52,6 +78,12 @@ class Row extends Resource
         });
     }
 
+    /**
+     * Add a link attachment to the row.
+     *
+     * @param  array  $attachment  The attachment payload.
+     * @return object
+     */
     public function addAttachmentLink(array $attachment): object
     {
         return $this->client->post("sheets/$this->sheetId/rows/$this->id/attachments", [
@@ -59,6 +91,12 @@ class Row extends Resource
         ]);
     }
 
+    /**
+     * Upload a file attachment to the row.
+     *
+     * @param  string  $filepath  The local file path to upload.
+     * @return string
+     */
     public function addAttachment(string $filepath): string
     {
         $authHeader = 'Bearer '.$this->client->getToken();
@@ -84,6 +122,11 @@ class Row extends Resource
         return $results;
     }
 
+    /**
+     * Delete the row.
+     *
+     * @return mixed
+     */
     public function delete()
     {
         return $this->client->delete("sheets/$this->sheetId/rows?ids=$this->id");

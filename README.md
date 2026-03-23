@@ -9,9 +9,13 @@ It also uses the [Collections](https://packagist.org/packages/illuminate/collect
 
 - [Installation](#installation)
 - [Usage](#usage) 
+    - [Client](#client)
     - [Sheets](#sheets) 
+    - [Rows](#rows)
     - [Workspace](#workspace) 
     - [Folder](#folder) 
+    - [Contacts](#contacts)
+    - [Generic Resource Helpers](#generic-resource-helpers)
 - [Issues](#issues)
 - [Roadmap](#roadmap)
 - [Contributing](#contributing)
@@ -32,6 +36,24 @@ This library provides a fluent api for interacting with Smartsheet.
 $smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
 
 $smartsheetClient->getSheet('sheetid');
+```
+
+### Client
+
+The `SmartsheetClient` class is the entry point for the currently supported API surface.
+
+```php
+$smartsheetClient = new \Smartsheet\SmartsheetClient([
+    'token' => 'yourapitoken',
+]);
+
+$smartsheetClient->listSheets(); // Collection<Sheet>
+$smartsheetClient->getSheet('4583173393803140'); // Sheet
+$smartsheetClient->getRow('4583173393803140', '7813666446436228'); // Row
+$smartsheetClient->getFolder('7116448184199044'); // Folder
+$smartsheetClient->getWorkspace('7116448184199044'); // Workspace
+$smartsheetClient->listWorkspaces(); // Collection<Workspace>
+$smartsheetClient->listContacts(); // Collection<Contact>
 ```
 
 ### Sheets
@@ -61,7 +83,111 @@ $sheet->addRow([
     'Transaction Desc' => "Toys",
     'Amount' => 754.23,
 ]);
+```
+ 
+Additional sheet operations:
 
+```php
+$sheet = $smartsheetClient->getSheet('4583173393803140');
+
+$sheet->getColumns(); // array
+$sheet->getRows(); // Collection<Row>
+$sheet->getColumnId('Primary'); // string
+
+$sheet->addRows([
+    ['Primary' => 'row 1', 'Status' => 'Open'],
+    ['Primary' => 'row 2', 'Status' => 'Closed'],
+]);
+
+$sheet->updateRow('7813666446436228', [
+    'Status' => 'Done',
+]);
+
+$sheet->updateRows([
+    '7813666446436228' => ['Status' => 'Done'],
+    '1122334455667788' => ['Status' => 'Queued'],
+]);
+
+$sheet->deleteRow('7813666446436228');
+$sheet->deleteRows(['7813666446436228', '1122334455667788']);
+
+$sheet->rename('Renamed Sheet');
+$sheet->copyTo('Copied Sheet', '7116448184199044');
+$sheet->copyRowsTo(['7813666446436228'], '9988776655443322');
+
+$sheet->addColumn([
+    'title' => 'Status',
+    'type' => 'TEXT_NUMBER',
+]);
+
+$sheet->addColumns([
+    ['title' => 'Status', 'type' => 'TEXT_NUMBER'],
+    ['title' => 'Owner', 'type' => 'TEXT_NUMBER'],
+]);
+
+$sheet->shareSheet([
+    [
+        'email' => 'user@example.com',
+        'accessLevel' => 'EDITOR',
+    ],
+]);
+
+$sheet->getShares();
+```
+
+For replacing data in-place, the library also exposes:
+
+```php
+$sheet->createRow(['Primary' => 'new row']);
+$sheet->replaceFirstRow(['Primary' => 'updated first row']);
+$sheet->replaceRows($rows, 'Primary');
+$sheet->sync($rows, 'Primary');
+$sheet->dropAllRows();
+$sheet->dropAndReplace($rows);
+$sheet->dropAllColumnsExcept(['Primary', 'Status']);
+```
+
+Summary field helpers:
+
+```php
+$sheet->addSummaryField('Total', '=COUNT([Primary]:[Primary])');
+$sheet->getSummaryFields();
+$sheet->getSummaryFieldByName('Total');
+$sheet->updateSummaryField([
+    'id' => 123,
+    'title' => 'Total',
+    'formula' => '=COUNT([Primary]:[Primary])',
+]);
+$sheet->updateSummaryFieldByName('Total', [
+    'title' => 'Total',
+    'formula' => '=COUNT([Primary]:[Primary])',
+]);
+$sheet->deleteSummaryField('123');
+$sheet->deleteSummaryFields(['123', '456']);
+$sheet->deleteAllSummaryFields();
+```
+
+### Rows
+
+Rows can be fetched directly from the client or from a sheet collection.
+
+```php
+$row = $smartsheetClient->getRow('4583173393803140', '7813666446436228');
+
+$row->getId();
+$row->getSheet(); // Sheet
+$row->getCells(); // Collection<Cell>
+$row->getCell('Primary'); // Cell|null
+
+$row->addAttachmentLink([
+    'attachmentType' => 'LINK',
+    'name' => 'Project Docs',
+    'description' => 'External project documentation',
+    'url' => 'https://example.com/docs',
+]);
+
+$row->addAttachment('/path/to/file.pdf');
+$row->delete();
 ```
 
 ### Workspace
@@ -75,8 +201,7 @@ $workspace = $smartsheetClient->getWorkspace('7116448184199044'); // \Smartsheet
 
 $workspace->getId(); // '7116448184199044'
 $workspace->getName(); // 'New workspace'
-
-$workspace->listSheets(); // Collection<Sheet>
+$workspace->getSheets(); // array
 
 // Fetch a sheet by name
 $workspace->getSheet('sheet name'); // Sheet
@@ -96,14 +221,43 @@ $workspace->createSheet('sheet name', [
 Fetch a folder and access its properties. See the [Folder Object](https://smartsheet-platform.github.io/api-docs/#folders) for a list of possible properties.
 
 ```php
-$smartsheetClient = new \Smartsheet\Client([ 'token' => 'yourapitoken' ]);
+$smartsheetClient = new \Smartsheet\SmartsheetClient([ 'token' => 'yourapitoken' ]);
 
 $folder = $smartsheetClient->getFolder('7116448184199044'); // Folder
 
 // Access some fields
 $folder->getId(); // '7116448184199044'
-$folder->getName(); // 'Projects'
+$folder->get('name'); // 'Projects'
+$folder->getPermaLink(); // 'https://app.smartsheet.com/...'
+$folder->getSheets(); // array
+
 $sheet = $folder->getSheet('sheet name');
+
+$folder->createSheet('sheet name');
+$folder->createSheets([
+    'sheet one',
+    'sheet two',
+]);
+```
+
+### Contacts
+
+Fetch account contacts:
+
+```php
+$contacts = $smartsheetClient->listContacts(); // Collection<Contact>
+```
+
+### Generic Resource Helpers
+
+All resource objects extend `Smartsheet\Resources\Resource`, which provides a few helpers for accessing raw payload data:
+
+```php
+$sheet = $smartsheetClient->getSheet('4583173393803140');
+
+$sheet->getData(); // full API payload as an array
+$sheet->get('permalink'); // a single field from the payload
+$sheet->toJSON(); // payload encoded as JSON
 ```
 
 ## Issues
@@ -119,9 +273,14 @@ Full api coverage! There's a lot missing, if you see something missing then put 
 Feel free to [submit a PR](https://github.com/Infamoustrey/smartsheet/compare), just be sure to explain what you are trying to fix/add when submitting it. 
 If you do decide to add functionality, it must be covered by a test. See the [contribution guide](./CONTRIBUTING.md) for more info. 
 
-To run the tests simply run, you'll want to add a `.env` file(see `.env.example`) with a valid api token value in the `SMARTSHEET_API_TOKEN` variable. 
-Tests are also run on pull requests. 
+To run the tests simply run:
 
 ```bash
 ./vendor/bin/phpunit
+```
+
+Static analysis can be run with:
+
+```bash
+vendor/bin/phpstan analyse src tests --memory-limit 1G
 ```

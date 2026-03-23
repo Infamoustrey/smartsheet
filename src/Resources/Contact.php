@@ -14,6 +14,12 @@ class Contact extends Resource
 
     protected string $email;
 
+    /**
+     * Create a contact resource.
+     *
+     * @param  SmartsheetClient  $client  The API client instance.
+     * @param  array  $data  The raw contact payload.
+     */
     public function __construct(SmartsheetClient $client, array $data)
     {
         parent::__construct($data);

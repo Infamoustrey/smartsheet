@@ -17,6 +17,12 @@ class Folder extends Resource
 
     protected array $sheets = [];
 
+    /**
+     * Create a folder resource.
+     *
+     * @param  SmartsheetClient  $client  The API client instance.
+     * @param  array  $data  The raw folder payload.
+     */
     public function __construct(SmartsheetClient $client, array $data)
     {
         parent::__construct($data);
@@ -24,6 +30,13 @@ class Folder extends Resource
         $this->client = $client;
     }
 
+    /**
+     * Create missing sheets in the folder by name.
+     *
+     * @param  array  $sheetNames  The list of sheet names to ensure exist.
+     * @param  mixed  $columns  The column definition payload for new sheets.
+     * @return Folder
+     */
     public function createSheets(array $sheetNames, $columns = DEFAULT_COLUMNS): Folder
     {
         $sheets = collect($this->getSheets());
@@ -38,6 +51,12 @@ class Folder extends Resource
     }
 
     /**
+     * Create a sheet in the folder.
+     *
+     * @param  mixed  $name  The sheet name.
+     * @param  mixed  $columns  The column definition payload.
+     * @return object|null
+     *
      * @throws SmartsheetApiException
      */
     public function createSheet($name, $columns = DEFAULT_COLUMNS)
@@ -50,11 +69,19 @@ class Folder extends Resource
         ]);
     }
 
+    /**
+     * Get the folder permalink.
+     */
     public function getPermaLink(): string
     {
         return $this->permaLink;
     }
 
+    /**
+     * Get the folder sheets payload.
+     *
+     * @return array
+     */
     public function getSheets(): array
     {
         return $this->sheets;
@@ -63,7 +90,8 @@ class Folder extends Resource
     /**
      * Fetches the sheet if it exists
      *
-     * @return string $id
+     * @param  string  $name  The sheet name.
+     * @return string
      *
      * @throws Exception
      */
@@ -84,7 +112,8 @@ class Folder extends Resource
     /**
      * Fetches the sheet if it exists
      *
-     * @return Sheet $sheet
+     * @param  string  $name  The sheet name.
+     * @return Sheet
      *
      * @throws Exception
      */
@@ -95,6 +124,9 @@ class Folder extends Resource
         );
     }
 
+    /**
+     * Get the folder identifier.
+     */
     public function getId(): string
     {
         return $this->id;
