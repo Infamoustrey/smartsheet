@@ -4,8 +4,7 @@ use Smartsheet\Resources\Sheet;
 
 class SheetsTest extends TestCase
 {
-
-    public function testCanFetchFolder(): void
+    public function test_can_fetch_folder(): void
     {
         $history = [];
         $folder = $this->getClient([
@@ -18,7 +17,7 @@ class SheetsTest extends TestCase
         $this->assertRequest($history, 0, 'GET', 'folders/folder-123');
     }
 
-    public function testCanFetchSheets(): void
+    public function test_can_fetch_sheets(): void
     {
         $history = [];
         $sheetList = $this->getClient([
@@ -35,7 +34,7 @@ class SheetsTest extends TestCase
         $this->assertRequest($history, 0, 'GET', 'sheets');
     }
 
-    public function testCanFetchSheet(): void
+    public function test_can_fetch_sheet(): void
     {
         $history = [];
         $sheet = $this->getClient([
@@ -47,7 +46,7 @@ class SheetsTest extends TestCase
         $this->assertRequest($history, 0, 'GET', 'sheets/sheet-123');
     }
 
-    public function testCanListColumns(): void
+    public function test_can_list_columns(): void
     {
         $history = [];
         $sheet = $this->getClient([
@@ -63,7 +62,7 @@ class SheetsTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testCanInsertRows(): void
+    public function test_can_insert_rows(): void
     {
         $history = [];
         $sheet = $this->getClient([
@@ -81,7 +80,7 @@ class SheetsTest extends TestCase
 
         $response = $sheet->addRow($row);
 
-        $this->assertEquals("SUCCESS", $response->message);
+        $this->assertEquals('SUCCESS', $response->message);
         $this->assertRequest($history, 0, 'GET', 'sheets/sheet-123');
         $this->assertRequest($history, 1, 'POST', 'sheets/sheet-123/rows');
     }
@@ -89,7 +88,7 @@ class SheetsTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testCanLinkRow(): void
+    public function test_can_link_row(): void
     {
         $history = [];
         $client = $this->getClient([
@@ -120,10 +119,10 @@ class SheetsTest extends TestCase
             'attachmentType' => 'LINK',
             'description' => 'Test Attachment',
             'name' => 'link',
-            'url' => 'https://github.com/Infamoustrey/smartsheet'
+            'url' => 'https://github.com/Infamoustrey/smartsheet',
         ]);
 
-        $this->assertEquals("SUCCESS", $response->message, 'Unable to create row.');
+        $this->assertEquals('SUCCESS', $response->message, 'Unable to create row.');
         $this->assertRequest($history, 0, 'GET', 'sheets/sheet-123');
         $this->assertRequest($history, 1, 'POST', 'sheets/sheet-123/rows');
         $this->assertRequest($history, 2, 'GET', 'sheets/sheet-123/rows/row-999');
@@ -131,10 +130,7 @@ class SheetsTest extends TestCase
         $this->assertRequest($history, 4, 'POST', 'sheets/sheet-123/rows/row-999/attachments');
     }
 
-    /**
-     *
-     */
-    public function testCanDeleteRow(): void
+    public function test_can_delete_row(): void
     {
         $history = [];
         $client = $this->getClient([
@@ -160,11 +156,11 @@ class SheetsTest extends TestCase
             'Primary' => 'row-to-delete',
         ]);
 
-        $this->assertEquals("SUCCESS", $rowResponse->message, 'Unable to create a test row.');
+        $this->assertEquals('SUCCESS', $rowResponse->message, 'Unable to create a test row.');
 
         $response = $sheet->deleteRow((string) $rowResponse->result->id);
 
-        $this->assertEquals("SUCCESS", $response->message);
+        $this->assertEquals('SUCCESS', $response->message);
         $this->assertRequest($history, 0, 'GET', 'workspaces');
         $this->assertRequest($history, 1, 'POST', 'workspaces/workspace-123/sheets');
         $this->assertRequest($history, 2, 'GET', 'sheets/sheet-123');
@@ -189,7 +185,7 @@ class SheetsTest extends TestCase
             'name' => 'Mock Sheet',
             'version' => '1',
             'hasSummaryFields' => false,
-            'permalink' => 'https://example.test/sheets/' . $sheetId,
+            'permalink' => 'https://example.test/sheets/'.$sheetId,
             'createdAt' => '2026-03-23T00:00:00Z',
             'modifiedAt' => '2026-03-23T00:00:00Z',
             'isMultiPickListEnabled' => false,

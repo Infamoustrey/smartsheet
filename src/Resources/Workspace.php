@@ -7,10 +7,10 @@ use Smartsheet\SmartsheetClient;
 
 const DEFAULT_COLUMNS = [
     [
-        "title" => "Primary",
-        "type" => "TEXT_NUMBER",
-        "primary" => true
-    ]
+        'title' => 'Primary',
+        'type' => 'TEXT_NUMBER',
+        'primary' => true,
+    ],
 ];
 
 class Workspace extends Resource
@@ -18,13 +18,13 @@ class Workspace extends Resource
     protected SmartsheetClient $client;
 
     protected string $id;
+
     protected string $name;
+
     protected array $sheets = [];
 
     /**
      * Workspace constructor.
-     * @param SmartsheetClient $client
-     * @param $data
      */
     public function __construct(SmartsheetClient $client, $data)
     {
@@ -34,25 +34,23 @@ class Workspace extends Resource
     }
 
     /**
-     *
-     * @param $name
-     * @param array[] $columns
-     * @return mixed
+     * @param  array[]  $columns
      */
     public function createSheet($name, $columns = DEFAULT_COLUMNS): mixed
     {
         return $this->client->post("workspaces/$this->id/sheets", [
             'json' => [
                 'name' => $name,
-                'columns' => $columns
-            ]
+                'columns' => $columns,
+            ],
         ]);
     }
 
     /**
      * Fetches the sheet if it exists
-     * @param string $name
+     *
      * @return Sheet $sheet
+     *
      * @throws Exception
      */
     public function getSheet(string $name): Sheet
@@ -60,9 +58,6 @@ class Workspace extends Resource
         return $this->client->getSheet($this->getSheetId($name));
     }
 
-    /**
-     * @return array
-     */
     public function getSheets(): array
     {
         return $this->sheets;
@@ -70,8 +65,9 @@ class Workspace extends Resource
 
     /**
      * Fetches the sheet if it exists
-     * @param string $name
+     *
      * @return string $id
+     *
      * @throws Exception
      */
     public function getSheetId(string $name): string
@@ -97,5 +93,4 @@ class Workspace extends Resource
     {
         return $this->name;
     }
-
 }

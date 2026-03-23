@@ -2,17 +2,19 @@
 
 namespace Smartsheet\Resources;
 
-use Smartsheet\SmartsheetClient;
-
 use Illuminate\Support\Collection;
+use Smartsheet\SmartsheetClient;
 
 class Row extends Resource
 {
     protected SmartsheetClient $client;
 
     protected string $id;
+
     protected string $sheetId;
+
     protected int $rowNumber;
+
     protected array $cells;
 
     protected Sheet $sheet;
@@ -43,9 +45,6 @@ class Row extends Resource
         });
     }
 
-    /**
-     * @return Collection
-     */
     public function getCells(): Collection
     {
         return collect($this->cells)->map(function ($cell) {
@@ -56,13 +55,13 @@ class Row extends Resource
     public function addAttachmentLink(array $attachment): object
     {
         return $this->client->post("sheets/$this->sheetId/rows/$this->id/attachments", [
-            'json' => $attachment
+            'json' => $attachment,
         ]);
     }
 
     public function addAttachment(string $filepath): string
     {
-        $authHeader = "Bearer " . $this->client->getToken();
+        $authHeader = 'Bearer '.$this->client->getToken();
 
         $request = curl_init("https://api.smartsheet.com/2.0/sheets/$this->sheetId/rows/$this->id/attachments");
 
@@ -71,9 +70,9 @@ class Row extends Resource
             $request,
             CURLOPT_HTTPHEADER,
             [
-                'Authorization: ' . $authHeader,
-                'Content-Disposition: attachment; filename="' . basename($filepath) . '"',
-                'Content-Type: ' . mime_content_type($filepath)
+                'Authorization: '.$authHeader,
+                'Content-Disposition: attachment; filename="'.basename($filepath).'"',
+                'Content-Type: '.mime_content_type($filepath),
             ]
         );
         curl_setopt($request, CURLOPT_POSTFIELDS, file_get_contents($filepath));

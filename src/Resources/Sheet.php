@@ -3,22 +3,31 @@
 namespace Smartsheet\Resources;
 
 use Exception;
-use Smartsheet\SmartsheetClient;
 use Illuminate\Support\Collection;
+use Smartsheet\SmartsheetClient;
 
 class Sheet extends Resource
 {
     protected SmartsheetClient $client;
 
     protected string $id;
+
     protected string $name;
+
     protected string $version;
+
     protected bool $hasSummaryFields;
+
     protected string $permalink;
+
     protected string $createdAt;
+
     protected string $modifiedAt;
+
     protected bool $isMultiPickListEnabled;
+
     protected array $columns;
+
     protected array $rows;
 
     public function __construct(SmartsheetClient $client, array $data)
@@ -51,7 +60,7 @@ class Sheet extends Resource
     public function dropAllColumnsExcept(array $columnNames)
     {
         $columnsToDelete = collect($this->columns)->filter(function ($column) use ($columnNames) {
-            return !in_array($column->title, $columnNames);
+            return ! in_array($column->title, $columnNames);
         })->pluck('id');
 
         foreach ($columnsToDelete as $columnId) {
@@ -63,23 +72,23 @@ class Sheet extends Resource
     public function copyTo(string $sheetName, string $destinationFolderId)
     {
         return $this->client->post("sheets/$this->id/copy", [
-            "json" => [
+            'json' => [
                 'newName' => $sheetName,
                 'destinationType' => 'folder',
-                'destinationId' => $destinationFolderId
-            ]
+                'destinationId' => $destinationFolderId,
+            ],
         ]);
     }
 
     public function copyRowsTo(array $rowIds, string $sheetId)
     {
         return $this->client->post("sheets/$this->id/rows/copy?include=all", [
-            "json" => [
+            'json' => [
                 'rowIds' => $rowIds,
                 'to' => [
-                    'sheetId' => $sheetId
-                ]
-            ]
+                    'sheetId' => $sheetId,
+                ],
+            ],
         ]);
     }
 
@@ -92,8 +101,6 @@ class Sheet extends Resource
     }
 
     /**
-     * @param $title
-     * @return string
      * @throws Exception
      */
     public function getColumnId($title): string
@@ -104,15 +111,13 @@ class Sheet extends Resource
             });
 
         if (is_null($column)) {
-            throw new Exception('Unable to find column with the name: ' . $title);
+            throw new Exception('Unable to find column with the name: '.$title);
         }
 
         return $column->id;
     }
 
     /**
-     * @param array $cells
-     * @return array
      * @throws Exception
      */
     protected function generateRowCells(array $cells): array
@@ -121,28 +126,27 @@ class Sheet extends Resource
 
         foreach ($cells as $title => $value) {
             if (is_array($value)) {
-                if (key_exists('formula', $value)) {
+                if (array_key_exists('formula', $value)) {
                     $newCells[] = [
                         'columnId' => $this->getColumnId($title),
-                        'formula' => $value['formula']
+                        'formula' => $value['formula'],
                     ];
-               }
-               else if (key_exists('hyperlink', $value)) {
+                } elseif (array_key_exists('hyperlink', $value)) {
                     $newCells[] = [
-                        'columnId'	 => $this->getColumnId($title),
-                        'value'		 => $value['value'],
-                        'hyperlink'	 => $value['hyperlink']
+                        'columnId' => $this->getColumnId($title),
+                        'value' => $value['value'],
+                        'hyperlink' => $value['hyperlink'],
                     ];
                 } else {
                     $newCells[] = [
                         'columnId' => $this->getColumnId($title),
-                        'objectValue' => $value
+                        'objectValue' => $value,
                     ];
                 }
             } else {
                 $newCells[] = [
                     'columnId' => $this->getColumnId($title),
-                    'value' => $value
+                    'value' => $value,
                 ];
             }
         }
@@ -152,38 +156,29 @@ class Sheet extends Resource
 
     /**
      * Adds a row to the sheet
-     *
-     * @param array $rows
-     * @return object
      */
     protected function insertRows(array $rows): object
     {
         return $this->client->post("sheets/$this->id/rows", [
-            'json' => $rows
+            'json' => $rows,
         ]);
     }
-
 
     /**
      * Adds a row to the sheet
      *
-     * @param array $cells
-     * @return object
      * @throws Exception
      */
     public function addRow(array $cells): object
     {
         return $this->insertRows([
             'toBottom' => true,
-            'cells' => $this->generateRowCells($cells)
+            'cells' => $this->generateRowCells($cells),
         ]);
     }
 
     /**
      * Adds a row to the sheet
-     *
-     * @param array $rows
-     * @return object
      */
     public function addRows(array $rows): object
     {
@@ -192,7 +187,7 @@ class Sheet extends Resource
                 ->map(function ($cells) {
                     return [
                         'toBottom' => true,
-                        'cells' => $this->generateRowCells($cells)
+                        'cells' => $this->generateRowCells($cells),
                     ];
                 })
                 ->values()
@@ -201,7 +196,6 @@ class Sheet extends Resource
     }
 
     /**
-     * @param array $rows
      * @throws Exception
      */
     public function updateRows(array $rows)
@@ -211,30 +205,27 @@ class Sheet extends Resource
         foreach ($rows as $id => $row) {
             $rowsToUpdate[] = [
                 'id' => $id,
-                'cells' => $this->generateRowCells($row)
+                'cells' => $this->generateRowCells($row),
             ];
         }
 
         return $this->client->put("sheets/$this->id/rows", [
-            'json' => $rowsToUpdate
+            'json' => $rowsToUpdate,
         ]);
     }
 
     /**
-     * @param $rowId
-     * @param array $cells
-     * @return mixed
      * @throws Exception
      */
     public function updateRow($rowId, array $cells): mixed
     {
         $rowsToUpdate[] = [
             'id' => $rowId,
-            'cells' => $this->generateRowCells($cells)
+            'cells' => $this->generateRowCells($cells),
         ];
 
         return $this->client->put("sheets/$this->id/rows", [
-            'json' => $rowsToUpdate
+            'json' => $rowsToUpdate,
         ]);
     }
 
@@ -281,15 +272,13 @@ class Sheet extends Resource
     /**
      * Adds a row to the sheet
      *
-     * @param array $cells
-     * @return object
      * @throws Exception
      */
     public function createRow(array $cells): object
     {
         return $this->insertRows([
             'toBottom' => true,
-            'cells' => $this->generateRowCells($cells)
+            'cells' => $this->generateRowCells($cells),
         ]);
     }
 
@@ -307,8 +296,8 @@ class Sheet extends Resource
     {
         return $this->client->put("sheets/$this->id", [
             'json' => [
-                'name' => $newName
-            ]
+                'name' => $newName,
+            ],
         ]);
     }
 
@@ -320,7 +309,7 @@ class Sheet extends Resource
     public function shareSheet(array $shares)
     {
         return $this->client->post("sheets/$this->id/shares", [
-            'json' => [...$shares]
+            'json' => [...$shares],
         ]);
     }
 
@@ -331,12 +320,9 @@ class Sheet extends Resource
 
     public function deleteRows(array $rowIds)
     {
-        return $this->client->delete("sheets/$this->id/rows?ids=" . implode(',', $rowIds));
+        return $this->client->delete("sheets/$this->id/rows?ids=".implode(',', $rowIds));
     }
 
-    /**
-     * @return array
-     */
     public function getColumns(): array
     {
         return $this->columns;
@@ -350,29 +336,30 @@ class Sheet extends Resource
     public function addColumns(array $columns)
     {
         return $this->client->post("sheets/$this->id/columns", [
-            'json' => $columns
+            'json' => $columns,
         ]);
     }
 
-    public function addSummaryField(String $title, String $formula, String $type = 'TEXT_NUMBER')
+    public function addSummaryField(string $title, string $formula, string $type = 'TEXT_NUMBER')
     {
         $options = [
-                [
+            [
                 'title' => $title,
                 'type' => $type,
-                'formula' => $formula
-            ]
+                'formula' => $formula,
+            ],
         ];
-        return $this->client->post("sheets/$this->id/summary/fields", 
+
+        return $this->client->post("sheets/$this->id/summary/fields",
             ['json' => [...$options]]
         );
     }
 
-    public function updateSummaryFieldByName(String $fieldName, array $summaryFieldDefinition)
+    public function updateSummaryFieldByName(string $fieldName, array $summaryFieldDefinition)
     {
         $summaryField = $this->getSummaryFieldByName($fieldName);
         $summaryFieldDefinition['id'] = $summaryField->id;
-        
+
         return $this->updateSummaryField($summaryFieldDefinition);
     }
 
@@ -383,12 +370,12 @@ class Sheet extends Resource
 
     public function updateSummaryFields(array $summaryFields)
     {
-        return $this->client->put("sheets/$this->id/summary/fields", 
+        return $this->client->put("sheets/$this->id/summary/fields",
             ['json' => [...$summaryFields]]
         );
     }
 
-    public function getSummaryFieldByName(String $fieldName)
+    public function getSummaryFieldByName(string $fieldName)
     {
         return collect($this->getSummaryFields()->fields)
             ->first(fn ($field) => $field->title == $fieldName);
@@ -401,10 +388,10 @@ class Sheet extends Resource
 
     public function deleteSummaryFields(array $fieldIds)
     {
-        return $this->client->delete("sheets/$this->id/summary/fields?ids=". implode(',', $fieldIds));
+        return $this->client->delete("sheets/$this->id/summary/fields?ids=".implode(',', $fieldIds));
     }
 
-    public function deleteSummaryField(String $fieldId)
+    public function deleteSummaryField(string $fieldId)
     {
         return $this->deleteSummaryFields([$fieldId]);
     }

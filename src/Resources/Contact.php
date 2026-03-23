@@ -8,7 +8,11 @@ class Contact extends Resource
 {
     protected SmartsheetClient $client;
 
-    protected string $id, $name, $email;
+    protected string $id;
+
+    protected string $name;
+
+    protected string $email;
 
     public function __construct(SmartsheetClient $client, array $data)
     {

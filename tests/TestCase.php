@@ -47,15 +47,14 @@ class TestCase extends BaseTestCase
         string $method,
         string $path,
         ?string $query = null
-    ): void
-    {
+    ): void {
         $this->assertArrayHasKey($index, $history, "Expected request #$index to exist.");
 
         /** @var RequestInterface $request */
         $request = $history[$index]['request'];
 
         $this->assertSame($method, $request->getMethod());
-        $this->assertSame('/2.0/' . ltrim($path, '/'), $request->getUri()->getPath());
+        $this->assertSame('/2.0/'.ltrim($path, '/'), $request->getUri()->getPath());
 
         if ($query !== null) {
             $this->assertSame($query, $request->getUri()->getQuery());

@@ -1,11 +1,21 @@
 <?php
- 
+
 use Smartsheet\Resources\Resource;
 use Smartsheet\Resources\Row;
 
+class HydratedResource extends Resource
+{
+    protected string $id;
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+}
+
 class CompatibilityTest extends TestCase
 {
-    public function testResourceConstructionDoesNotEmitDynamicPropertyDeprecations(): void
+    public function test_resource_construction_does_not_emit_dynamic_property_deprecations(): void
     {
         $deprecations = [];
 
@@ -29,22 +39,15 @@ class CompatibilityTest extends TestCase
         $this->assertSame('bar', $resource->get('foo'));
     }
 
-    public function testDeclaredPropertiesAreStillHydratedFromPayload(): void
+    public function test_declared_properties_are_still_hydrated_from_payload(): void
     {
-        $resource = new class (['id' => 'sheet-123']) extends Resource {
-            protected string $id;
-
-            public function getId(): string
-            {
-                return $this->id;
-            }
-        };
+        $resource = new HydratedResource(['id' => 'sheet-123']);
 
         $this->assertSame('sheet-123', $resource->getId());
         $this->assertSame('sheet-123', $resource->get('id'));
     }
 
-    public function testLoadingRowClassDoesNotEmitImplicitNullableDeprecations(): void
+    public function test_loading_row_class_does_not_emit_implicit_nullable_deprecations(): void
     {
         $deprecations = [];
 

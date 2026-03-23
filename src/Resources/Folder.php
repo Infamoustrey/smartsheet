@@ -10,8 +10,11 @@ class Folder extends Resource
     protected SmartsheetClient $client;
 
     protected string $id;
+
     protected string $name;
+
     protected string $permaLink;
+
     protected array $sheets = [];
 
     public function __construct(SmartsheetClient $client, array $data)
@@ -35,7 +38,6 @@ class Folder extends Resource
     }
 
     /**
-     *
      * @throws SmartsheetApiException
      */
     public function createSheet($name, $columns = DEFAULT_COLUMNS)
@@ -43,22 +45,16 @@ class Folder extends Resource
         return $this->client->post("folders/$this->id/sheets", [
             'json' => [
                 'name' => $name,
-                'columns' => $columns
-            ]
+                'columns' => $columns,
+            ],
         ]);
     }
 
-    /**
-     * @return string
-     */
     public function getPermaLink(): string
     {
         return $this->permaLink;
     }
 
-    /**
-     * @return array
-     */
     public function getSheets(): array
     {
         return $this->sheets;
@@ -66,8 +62,9 @@ class Folder extends Resource
 
     /**
      * Fetches the sheet if it exists
-     * @param string $name
+     *
      * @return string $id
+     *
      * @throws Exception
      */
     public function getSheetId(string $name): string
@@ -86,8 +83,9 @@ class Folder extends Resource
 
     /**
      * Fetches the sheet if it exists
-     * @param string $name
+     *
      * @return Sheet $sheet
+     *
      * @throws Exception
      */
     public function getSheet(string $name): Sheet
@@ -97,9 +95,6 @@ class Folder extends Resource
         );
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;

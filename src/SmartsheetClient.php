@@ -4,9 +4,9 @@ namespace Smartsheet;
 
 use Illuminate\Support\Collection;
 use Smartsheet\Resources\Contact;
-use Smartsheet\Resources\Sheet;
-use Smartsheet\Resources\Row;
 use Smartsheet\Resources\Folder;
+use Smartsheet\Resources\Row;
+use Smartsheet\Resources\Sheet;
 use Smartsheet\Resources\Workspace;
 
 class SmartsheetClient extends APIClient
@@ -21,7 +21,7 @@ class SmartsheetClient extends APIClient
         $temp = collect([]);
 
         foreach ($target as $t) {
-            $temp->add(new $class($this, (array)$t));
+            $temp->add(new $class($this, (array) $t));
         }
 
         return $temp;
@@ -58,36 +58,26 @@ class SmartsheetClient extends APIClient
 
     /**
      * Fetch a specific sheet
-     *
-     * @param string $sheetId
-     * @return Sheet
      */
     public function getSheet(string $sheetId): Sheet
     {
         $response = $this->get("sheets/$sheetId");
 
-        return new Sheet($this, (array)$response);
+        return new Sheet($this, (array) $response);
     }
 
     /**
      * Fetch a specific row in a sheet
-     *
-     * @param string $sheetId
-     * @param string $rowId
-     * @return Row
      */
     public function getRow(string $sheetId, string $rowId): Row
     {
         $response = $this->get("sheets/$sheetId/rows/$rowId");
 
-        return new Row($this, (array)$response);
+        return new Row($this, (array) $response);
     }
 
     /**
      * Fetch a folder with a given ID
-     *
-     * @param string $folderId
-     * @return Folder
      */
     public function getFolder(string $folderId): Folder
     {
@@ -96,9 +86,6 @@ class SmartsheetClient extends APIClient
 
     /**
      * Fetch a workspace with a given ID
-     *
-     * @param string $workspaceId
-     * @return Workspace
      */
     public function getWorkspace(string $workspaceId): Workspace
     {
@@ -110,6 +97,6 @@ class SmartsheetClient extends APIClient
      */
     public function listWorkspaces(): Collection
     {
-        return $this->instantiateCollection(Workspace::class, $this->get("workspaces")->data);
+        return $this->instantiateCollection(Workspace::class, $this->get('workspaces')->data);
     }
 }
