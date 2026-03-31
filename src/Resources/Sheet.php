@@ -155,7 +155,7 @@ class Sheet extends Resource
             });
 
         if (is_null($column)) {
-            throw new Exception('Unable to find column with the name: '.$title);
+            throw new Exception('Unable to find column with the name: ' . $title);
         }
 
         return $column->id;
@@ -402,24 +402,72 @@ class Sheet extends Resource
     /**
      * Get the shares for the sheet.
      *
-     * @return mixed
+     * Uses GET /shares with assetType + assetId (token-paginated; replaces deprecated GET /sheets/{id}/shares).
+     *
+     * @return array<int, object>
      */
-    public function getShares()
+    public function getShares(): array
     {
-        return $this->client->get("sheets/$this->id/shares")->data;
+        $items = [];
+        $lastKey = null;
+
+        do {
+            $query = http_build_query(array_filter([
+                'assetType' => 'sheet',
+                'assetId' => (string) $this->id,
+                'maxItems' => 100,
+                'lastKey' => $lastKey,
+            ], fn($v) => $v !== null && $v !== ''));
+
+            $response = $this->client->get('shares?' . $query);
+            $pageItems = $response->items ?? [];
+
+            foreach ($pageItems as $item) {
+                $items[] = $item;
+            }
+
+            $lastKey = $response->lastKey ?? null;
+        } while (! empty($lastKey));
+
+        return $items;
     }
 
     /**
      * Share the sheet with the provided recipients.
      *
-     * @param  array  $shares  The share definitions to create.
-     * @return mixed
+     * Uses POST /shares with assetType + assetId (replaces deprecated POST /sheets/{id}/shares).
+     * Each entry must include accessLevel and either email or groupId.
+     *
+     * @param  array<int, array<string, mixed>|object>  $shares  The share definitions to create.
+     * @return mixed  The last API response, or null if nothing was posted.
      */
     public function shareSheet(array $shares)
     {
-        return $this->client->post("sheets/$this->id/shares", [
-            'json' => [...$shares],
-        ]);
+        $assetId = rawurlencode((string) $this->id);
+        $last = null;
+
+        foreach ($shares as $share) {
+            $share = (array) $share;
+            $body = ['accessLevel' => $share['accessLevel'] ?? $share['access_level'] ?? null];
+
+            if (empty($body['accessLevel'])) {
+                continue;
+            }
+
+            if (! empty($share['email'])) {
+                $body['email'] = $share['email'];
+            } elseif (! empty($share['groupId'])) {
+                $body['groupId'] = $share['groupId'];
+            } else {
+                continue;
+            }
+
+            $last = $this->client->post("shares?assetType=sheet&assetId={$assetId}", [
+                'json' => $body,
+            ]);
+        }
+
+        return $last;
     }
 
     /**
@@ -441,7 +489,7 @@ class Sheet extends Resource
      */
     public function deleteRows(array $rowIds)
     {
-        return $this->client->delete("sheets/$this->id/rows?ids=".implode(',', $rowIds));
+        return $this->client->delete("sheets/$this->id/rows?ids=" . implode(',', $rowIds));
     }
 
     /**
@@ -494,7 +542,8 @@ class Sheet extends Resource
             ],
         ];
 
-        return $this->client->post("sheets/$this->id/summary/fields",
+        return $this->client->post(
+            "sheets/$this->id/summary/fields",
             ['json' => [...$options]]
         );
     }
@@ -533,7 +582,8 @@ class Sheet extends Resource
      */
     public function updateSummaryFields(array $summaryFields)
     {
-        return $this->client->put("sheets/$this->id/summary/fields",
+        return $this->client->put(
+            "sheets/$this->id/summary/fields",
             ['json' => [...$summaryFields]]
         );
     }
@@ -547,7 +597,7 @@ class Sheet extends Resource
     public function getSummaryFieldByName(string $fieldName)
     {
         return collect($this->getSummaryFields()->fields)
-            ->first(fn ($field) => $field->title == $fieldName);
+            ->first(fn($field) => $field->title == $fieldName);
     }
 
     /**
@@ -568,7 +618,7 @@ class Sheet extends Resource
      */
     public function deleteSummaryFields(array $fieldIds)
     {
-        return $this->client->delete("sheets/$this->id/summary/fields?ids=".implode(',', $fieldIds));
+        return $this->client->delete("sheets/$this->id/summary/fields?ids=" . implode(',', $fieldIds));
     }
 
     /**
