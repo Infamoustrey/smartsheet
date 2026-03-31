@@ -139,9 +139,9 @@ class SmartsheetClient extends APIClient
                 'paginationType' => 'token',
                 'maxItems' => 100,
                 'lastKey' => $lastKey,
-            ], fn($v) => $v !== null && $v !== ''));
+            ], fn ($v) => $v !== null && $v !== ''));
 
-            $response = $this->get('workspaces?' . $query);
+            $response = $this->get('workspaces?'.$query);
             $page = $response->data ?? [];
 
             foreach ($page as $row) {
@@ -183,9 +183,9 @@ class SmartsheetClient extends APIClient
                 'childrenResourceTypes' => 'sheets,folders',
                 'maxItems' => 100,
                 'lastKey' => $lastKey,
-            ], fn($v) => $v !== null && $v !== ''));
+            ], fn ($v) => $v !== null && $v !== ''));
 
-            $response = $this->get($basePath . '?' . $query);
+            $response = $this->get($basePath.'?'.$query);
             $page = $response->data ?? [];
 
             foreach ($page as $item) {

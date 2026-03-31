@@ -155,7 +155,7 @@ class Sheet extends Resource
             });
 
         if (is_null($column)) {
-            throw new Exception('Unable to find column with the name: ' . $title);
+            throw new Exception('Unable to find column with the name: '.$title);
         }
 
         return $column->id;
@@ -417,9 +417,9 @@ class Sheet extends Resource
                 'assetId' => (string) $this->id,
                 'maxItems' => 100,
                 'lastKey' => $lastKey,
-            ], fn($v) => $v !== null && $v !== ''));
+            ], fn ($v) => $v !== null && $v !== ''));
 
-            $response = $this->client->get('shares?' . $query);
+            $response = $this->client->get('shares?'.$query);
             $pageItems = $response->items ?? [];
 
             foreach ($pageItems as $item) {
@@ -439,7 +439,7 @@ class Sheet extends Resource
      * Each entry must include accessLevel and either email or groupId.
      *
      * @param  array<int, array<string, mixed>|object>  $shares  The share definitions to create.
-     * @return mixed  The last API response, or null if nothing was posted.
+     * @return mixed The last API response, or null if nothing was posted.
      */
     public function shareSheet(array $shares)
     {
@@ -489,7 +489,7 @@ class Sheet extends Resource
      */
     public function deleteRows(array $rowIds)
     {
-        return $this->client->delete("sheets/$this->id/rows?ids=" . implode(',', $rowIds));
+        return $this->client->delete("sheets/$this->id/rows?ids=".implode(',', $rowIds));
     }
 
     /**
@@ -597,7 +597,7 @@ class Sheet extends Resource
     public function getSummaryFieldByName(string $fieldName)
     {
         return collect($this->getSummaryFields()->fields)
-            ->first(fn($field) => $field->title == $fieldName);
+            ->first(fn ($field) => $field->title == $fieldName);
     }
 
     /**
@@ -618,7 +618,7 @@ class Sheet extends Resource
      */
     public function deleteSummaryFields(array $fieldIds)
     {
-        return $this->client->delete("sheets/$this->id/summary/fields?ids=" . implode(',', $fieldIds));
+        return $this->client->delete("sheets/$this->id/summary/fields?ids=".implode(',', $fieldIds));
     }
 
     /**
