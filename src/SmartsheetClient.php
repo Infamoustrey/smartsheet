@@ -95,28 +95,141 @@ class SmartsheetClient extends APIClient
     /**
      * Fetch a folder with a given ID.
      *
+     * Uses folder metadata + token-paginated children (replaces deprecated GET /folders/{id}).
+     *
      * @param  string  $folderId  The folder identifier.
      */
     public function getFolder(string $folderId): Folder
     {
-        return new Folder($this, (array) $this->get("folders/$folderId"));
+        $folderId = (string) $folderId;
+        $meta = $this->get("folders/{$folderId}/metadata");
+        $children = $this->fetchAllFolderChildren($folderId);
+
+        return new Folder($this, $this->hydrateContainerFromMetaAndChildren($meta, $children));
     }
 
     /**
      * Fetch a workspace with a given ID.
      *
+     * Uses workspace metadata + token-paginated children (replaces deprecated GET /workspaces/{id}).
+     *
      * @param  string  $workspaceId  The workspace identifier.
      */
     public function getWorkspace(string $workspaceId): Workspace
     {
-        return new Workspace($this, (array) $this->get("workspaces/$workspaceId"));
+        $workspaceId = (string) $workspaceId;
+        $meta = $this->get("workspaces/{$workspaceId}/metadata");
+        $children = $this->fetchAllWorkspaceChildren($workspaceId);
+
+        return new Workspace($this, $this->hydrateContainerFromMetaAndChildren($meta, $children));
     }
 
     /**
      * Returns a list of workspaces.
+     *
+     * Uses token-based pagination (replaces deprecated offset/includeAll defaults on GET /workspaces).
      */
     public function listWorkspaces(): Collection
     {
-        return $this->instantiateCollection(Workspace::class, $this->get('workspaces')->data);
+        $all = [];
+        $lastKey = null;
+
+        do {
+            $query = http_build_query(array_filter([
+                'paginationType' => 'token',
+                'maxItems' => 100,
+                'lastKey' => $lastKey,
+            ], fn ($v) => $v !== null && $v !== ''));
+
+            $response = $this->get('workspaces?'.$query);
+            $page = $response->data ?? [];
+
+            foreach ($page as $row) {
+                $all[] = $row;
+            }
+
+            $lastKey = $response->lastKey ?? null;
+        } while (! empty($lastKey));
+
+        return $this->instantiateCollection(Workspace::class, $all);
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    protected function fetchAllFolderChildren(string $folderId): array
+    {
+        return $this->fetchAllContainerChildren("folders/{$folderId}/children");
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    protected function fetchAllWorkspaceChildren(string $workspaceId): array
+    {
+        return $this->fetchAllContainerChildren("workspaces/{$workspaceId}/children");
+    }
+
+    /**
+     * @return array<int, object>
+     */
+    protected function fetchAllContainerChildren(string $basePath): array
+    {
+        $all = [];
+        $lastKey = null;
+
+        do {
+            $query = http_build_query(array_filter([
+                'childrenResourceTypes' => 'sheets,folders',
+                'maxItems' => 100,
+                'lastKey' => $lastKey,
+            ], fn ($v) => $v !== null && $v !== ''));
+
+            $response = $this->get($basePath.'?'.$query);
+            $page = $response->data ?? [];
+
+            foreach ($page as $item) {
+                $all[] = $item;
+            }
+
+            $lastKey = $response->lastKey ?? null;
+        } while (! empty($lastKey));
+
+        return $all;
+    }
+
+    /**
+     * Build a folder/workspace payload compatible with {@see Folder} and {@see Workspace}.
+     *
+     * @param  array<int, object>  $children
+     * @return array<string, mixed>
+     */
+    protected function hydrateContainerFromMetaAndChildren(object $meta, array $children): array
+    {
+        $sheets = [];
+        $folders = [];
+
+        foreach ($children as $child) {
+            // Children endpoints may use `resourceType` ("sheet"/"folder") or legacy `type` ("SHEET"/"FOLDER").
+            $raw = $child->type ?? $child->resourceType ?? '';
+            $type = strtoupper((string) $raw);
+
+            if ($type === 'SHEET') {
+                $sheets[] = $child;
+            } elseif ($type === 'FOLDER') {
+                $folders[] = $child;
+            }
+        }
+
+        $permalink = (string) ($meta->permalink ?? '');
+
+        return [
+            'id' => (string) $meta->id,
+            'name' => (string) $meta->name,
+            'permalink' => $permalink,
+            'permaLink' => $permalink,
+            'sheets' => $sheets,
+            'folders' => $folders,
+        ];
     }
 }
