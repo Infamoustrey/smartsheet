@@ -8,13 +8,15 @@ class SheetsTest extends TestCase
     {
         $history = [];
         $folder = $this->getClient([
-            $this->folderPayload(),
+            $this->folderMetadataPayload(),
+            $this->folderChildrenEmptyPayload(),
         ], $history)->getFolder('folder-123');
 
         $this->assertNotNull($folder);
         $this->assertSame('folder-123', $folder->getId());
         $this->assertSame('Mock Folder', $folder->get('name'));
-        $this->assertRequest($history, 0, 'GET', 'folders/folder-123');
+        $this->assertRequest($history, 0, 'GET', 'folders/folder-123/metadata');
+        $this->assertRequest($history, 1, 'GET', 'folders/folder-123/children', 'childrenResourceTypes=sheets%2Cfolders&maxItems=100');
     }
 
     public function test_can_fetch_sheets(): void
@@ -168,13 +170,27 @@ class SheetsTest extends TestCase
         $this->assertRequest($history, 4, 'DELETE', 'sheets/sheet-123/rows', 'ids=row-999');
     }
 
-    private function folderPayload(): array
+    /**
+     * GET /folders/{id}/metadata response shape.
+     */
+    private function folderMetadataPayload(): array
     {
         return [
             'id' => 'folder-123',
             'name' => 'Mock Folder',
-            'permaLink' => 'https://example.test/folders/folder-123',
-            'sheets' => [],
+            'permalink' => 'https://example.test/folders/folder-123',
+            'createdAt' => '2026-03-23T00:00:00Z',
+            'modifiedAt' => '2026-03-23T00:00:00Z',
+        ];
+    }
+
+    /**
+     * GET /folders/{id}/children — one page, no further pages (no lastKey).
+     */
+    private function folderChildrenEmptyPayload(): array
+    {
+        return [
+            'data' => [],
         ];
     }
 
